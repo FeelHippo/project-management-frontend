@@ -1,14 +1,19 @@
 'use client';
 
-import React from 'react';
+import React, { RefObject } from 'react';
 import useForm from '@/app/lib/utils/form';
 import validate from '../lib/utils/validate_data';
 import {
   textInputs,
   userRegistration,
 } from '@/app/lib/interfaces/registration';
+import { PageHeaderInterface } from '@/app/components/page_header';
 
-function AuthenticationForm() {
+export interface AuthenticationFormInterface {
+  text: string;
+  width: number;
+}
+function AuthenticationForm({ text, width }: AuthenticationFormInterface) {
   const { handleChange, inputs, handleSubmit, errors } = useForm(validate);
 
   const uniqueTextInputs = [
@@ -39,14 +44,19 @@ function AuthenticationForm() {
               placeholder={textInput.placeholder}
               value={inputs[textInput.name]}
               onChange={handleChange}
-              className={
-                !!errors[textInput.name] ? errors[textInput.name] : null
-              }
+              className={`block h-[64px] border-[2px] border-gray-500 rounded-[20px] font-sans text-gray-500 text-xl my-[16px] px-[24px] py-[16px] ${!!errors[textInput.name] ? errors[textInput.name] : null}`}
+              style={{ width: width * 2 }}
               onBlur={handleSubmit}
               autoComplete="off"
+              required
             />
           ))}
-          <button>SUBMIT</button>
+          <button
+            className="block h-[64px] font-sans text-white text-xl bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 rounded-[20px] my-[16px] px-[24px] py-[16px]"
+            style={{ width: width * 2 }}
+          >
+            {text}
+          </button>
         </div>
       </form>
     </div>
