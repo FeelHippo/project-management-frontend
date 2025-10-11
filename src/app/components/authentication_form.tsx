@@ -31,8 +31,9 @@ function AuthenticationForm() {
     <div className="form">
       <form onSubmit={handleSubmit}>
         <div>
-          {uniqueTextInputs.map((textInput) => (
+          {uniqueTextInputs.map((textInput, index) => (
             <input
+              key={index}
               type={textInput.type}
               name={textInput.name.toString()}
               placeholder={textInput.placeholder}
