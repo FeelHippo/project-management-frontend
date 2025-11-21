@@ -21,7 +21,7 @@ export const TryRefreshComponent = () => {
         }
       })
       .catch(() => {
-          redirect('/registration');
+        redirect('/registration');
       });
   }, [router]);
 

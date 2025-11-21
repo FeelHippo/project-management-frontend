@@ -3,9 +3,7 @@
 import React from 'react';
 import useForm from '@/app/lib/utils/form';
 import validate from '../lib/utils/validate_data';
-import {
-  textInputs,
-} from '@/app/lib/interfaces/registration';
+import { textInputs } from '@/app/lib/interfaces/registration';
 
 export interface AuthenticationFormInterface {
   text: string;
@@ -13,19 +11,19 @@ export interface AuthenticationFormInterface {
 }
 
 export const uniqueTextInputs = [
-    { name: textInputs.firstname, type: 'text', placeholder: 'First Name' },
-    { name: textInputs.lastname, type: 'text', placeholder: 'Last Name' },
-    { name: textInputs.email, type: 'email', placeholder: 'Email' },
-    {
-        name: textInputs.password,
-        type: 'password',
-        placeholder: 'Choose a password',
-    },
-    {
-        name: textInputs.passwordConfirm,
-        type: 'password',
-        placeholder: 'Repeat password',
-    },
+  { name: textInputs.firstname, type: 'text', placeholder: 'First Name' },
+  { name: textInputs.lastname, type: 'text', placeholder: 'Last Name' },
+  { name: textInputs.email, type: 'email', placeholder: 'Email' },
+  {
+    name: textInputs.password,
+    type: 'password',
+    placeholder: 'Choose a password',
+  },
+  {
+    name: textInputs.passwordConfirm,
+    type: 'password',
+    placeholder: 'Repeat password',
+  },
 ];
 
 function AuthenticationForm({ text, width }: AuthenticationFormInterface) {
@@ -33,10 +31,7 @@ function AuthenticationForm({ text, width }: AuthenticationFormInterface) {
 
   return (
     <div className="form">
-      <form
-          aria-label="form"
-          onSubmit={handleSubmit}
-      >
+      <form aria-label="form" onSubmit={handleSubmit}>
         <div>
           {uniqueTextInputs.map((textInput, index) => (
             <input
