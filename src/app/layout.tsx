@@ -3,8 +3,8 @@ import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 import React from 'react';
 import GradientBackground from '@/app/gradient_background';
-import { gradients } from '@/app/lib/constants/lists';
-import { Supertokens_init } from './components/supertokens_init';
+import { gradients } from '@/lib/constants/lists';
+import { SupertokensInit } from '../components/supertokens_init';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -28,18 +28,18 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <Supertokens_init>
+      <SupertokensInit>
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
           <GradientBackground
             gradients={gradients}
             title="Welcome to"
-            subtitle="Public Repository"
+            subtitle="Project Management"
           />
           {children}
         </body>
-      </Supertokens_init>
+      </SupertokensInit>
     </html>
   );
 }

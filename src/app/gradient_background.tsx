@@ -1,7 +1,7 @@
 import { JSX } from 'react';
 
 export default function GradientBackground(props: {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   gradients: any[];
   title: string;
   subtitle: string;

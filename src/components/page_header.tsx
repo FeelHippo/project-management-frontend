@@ -12,7 +12,7 @@ export default function PageHeader({
 }: PageHeaderInterface) {
   return (
     <div>
-      <div ref={parentRef} className="font-sans font-bold text-black text-6xl">
+      <div ref={parentRef} className="font-sans font-bold text-black text-5xl">
         {text}
       </div>
       <div

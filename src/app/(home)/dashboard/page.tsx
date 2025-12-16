@@ -1,6 +1,6 @@
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
-import { TryRefreshComponent } from '@/app/components/try_refresh_client_component';
+import { TryRefreshComponent } from '@/components/try_refresh_client_component';
 import { connectionURI } from '@/app/config/backend';
 import jwksClient from 'jwks-rsa';
 import JsonWebToken from 'jsonwebtoken';
