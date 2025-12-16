@@ -1,9 +1,9 @@
 version: 1
-project-management-frontend:
+frontend:
   phases:
     preBuild:
       commands:
-        - npm install --legacy-peer-deps
+        - npm ci
     build:
       commands:
         # Critical Next.js fix for Amplify
