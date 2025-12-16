@@ -1,5 +1,5 @@
 import * as z from 'zod';
-import { TextInput } from '@/lib/interfaces/registration';
+import { TextInput } from '@/lib/interfaces/authentication';
 
 export const registrationFormSchema = z
   .object<{ [key in TextInput]: z.ZodString }>({
@@ -23,13 +23,24 @@ export const registrationFormSchema = z
           ),
         'Password not strong enough.',
       ),
-    PASSWORD_CONFIRM: z.string(),
+    PASSWORD_CONFIRM: z
+      .string()
+      .refine(
+        (value) =>
+          /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/.test(
+            value,
+          ),
+        'Password not strong enough.',
+      ),
   })
   .refine(
-    (data) => !data.PASSWORD.length || data.PASSWORD != data.PASSWORD_CONFIRM,
+    (data) =>
+      !!data.PASSWORD.length &&
+      !!data.PASSWORD_CONFIRM.length &&
+      data.PASSWORD == data.PASSWORD_CONFIRM,
     {
       message: 'Invalid Password',
-      path: ['PASSWORD', 'PASSWORD_CONFIRM'],
+      path: ['PASSWORD_CONFIRM'],
     },
   );
 
@@ -47,12 +58,12 @@ export const loginFormSchema = z
       .refine(
         (value) =>
           /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/.test(
-            value ?? '',
+            value,
           ),
         'Password not strong enough.',
       ),
   })
-  .refine((data) => !data.PASSWORD.length, {
+  .refine((data) => !!data.PASSWORD.length, {
     message: 'Invalid Password',
     path: ['PASSWORD'],
   });

@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useForm } from '@tanstack/react-form';
 import { TextInput } from '@/lib/interfaces/authentication';
-import { registrationFormSchema } from '@/lib/validation/form';
+import { loginFormSchema } from '@/lib/validation/form';
 import { toast } from 'sonner';
 import { Field, FieldError, FieldGroup } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
@@ -15,39 +15,32 @@ export interface AuthenticationFormInterface {
 }
 
 export const uniqueTextInputs = [
-  { name: TextInput.firstname, type: 'text', placeholder: 'First Name' },
-  { name: TextInput.lastname, type: 'text', placeholder: 'Last Name' },
   { name: TextInput.email, type: 'email', placeholder: 'Email' },
   {
     name: TextInput.password,
     type: 'password',
-    placeholder: 'Choose a password',
-  },
-  {
-    name: TextInput.passwordConfirm,
-    type: 'password',
-    placeholder: 'Repeat password',
+    placeholder: 'Password',
   },
 ];
 
-function RegistrationForm({ text, width }: AuthenticationFormInterface) {
+function LoginForm({ text, width }: AuthenticationFormInterface) {
   const form = useForm({
     defaultValues: uniqueTextInputs.reduce(
       (acc, { name }) => (acc = { ...acc, [name]: '' }),
       {},
     ),
     validators: {
-      onSubmit: registrationFormSchema,
+      onSubmit: loginFormSchema,
     },
     onSubmit: async ({ value }) => {
-      toast.success('Registration Successful');
+      toast.success('Login Successful');
     },
   });
 
   return (
-    <div className="registration-form">
+    <div className="login-form">
       <form
-        id="registration-form"
+        id="login-form"
         onSubmit={(e) => {
           e.preventDefault();
           form.handleSubmit().then();
@@ -87,20 +80,20 @@ function RegistrationForm({ text, width }: AuthenticationFormInterface) {
       </form>
       <Button
         type="submit"
-        form="registration-form"
+        form="login-form"
         style={{ width: width * 2 }}
         className="h-[64px] border-[2px] rounded-[20px] text-xl"
       >
         {text}
       </Button>
       <div className="text-center">
-        Already have an account?{' '}
-        <Link href="/login" className="underline">
-          Login
+        I do not have an account?{' '}
+        <Link href="/registration" className="underline">
+          Signup
         </Link>
       </div>
     </div>
   );
 }
 
-export default RegistrationForm;
+export default LoginForm;
