@@ -5,6 +5,7 @@ import React from 'react';
 import GradientBackground from '@/app/gradient_background';
 import { gradients } from '@/lib/constants/lists';
 import { SupertokensInit } from '../components/supertokens_init';
+import { Toaster } from "sonner";
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -38,6 +39,7 @@ export default function RootLayout({
             subtitle="Project Management"
           />
           {children}
+          <Toaster />
         </body>
       </SupertokensInit>
     </html>
