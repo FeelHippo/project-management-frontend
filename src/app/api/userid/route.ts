@@ -1,5 +1,5 @@
 import { NextResponse, NextRequest } from 'next/server';
-import { ensureSuperTokensInit } from '@/app/config/backend';
+import { ensureSuperTokensInit } from '@/app/config/backendConfig';
 
 ensureSuperTokensInit();
 

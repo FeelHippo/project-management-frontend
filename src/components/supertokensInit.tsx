@@ -2,7 +2,7 @@
 
 import React from 'react';
 import SuperTokensWebJs from 'supertokens-web-js';
-import { frontendConfig } from '../app/config/frontend';
+import { frontendConfig } from '@/app/config/frontendConfig';
 
 if (typeof window !== 'undefined') {
   // we only want to call this init function on the frontend, so we check typeof window !== 'undefined'

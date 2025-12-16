@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 import { Field, FieldError, FieldGroup } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { signUp } from 'supertokens-web-js/recipe/emailpassword';
 
 export interface AuthenticationFormInterface {
   text: string;
@@ -40,7 +41,44 @@ function RegistrationForm({ text, width }: AuthenticationFormInterface) {
       onSubmit: registrationFormSchema,
     },
     onSubmit: async ({ value }) => {
-      toast.success('Registration Successful');
+      try {
+        const { EMAIL, PASSWORD } = value as {
+          EMAIL: string;
+          PASSWORD: string;
+        };
+        let response = await signUp({
+          formFields: [
+            {
+              id: 'email',
+              value: EMAIL,
+            },
+            {
+              id: 'password',
+              value: PASSWORD,
+            },
+          ],
+        });
+
+        if (response.status === 'FIELD_ERROR') {
+          response.formFields.forEach((formField) => {
+            if (formField.id === 'email') {
+              toast.error(formField.error);
+            } else if (formField.id === 'password') {
+              toast.error(formField.error);
+            }
+          });
+        } else if (response.status === 'SIGN_UP_NOT_ALLOWED') {
+          toast.warning(response.reason);
+        } else {
+          window.location.href = '/dashboard';
+        }
+      } catch (err: any) {
+        if (err.isSuperTokensGeneralError === true) {
+          toast.error(err.message);
+        } else {
+          toast.error('Oops! Something went wrong.');
+        }
+      }
     },
   });
 
@@ -67,6 +105,7 @@ function RegistrationForm({ text, width }: AuthenticationFormInterface) {
                     <Input
                       id={textInput.name}
                       name={textInput.name}
+                      type={textInput.type}
                       value={field.state.value as string}
                       onBlur={field.handleBlur}
                       onChange={(e) => field.handleChange(e.target.value)}

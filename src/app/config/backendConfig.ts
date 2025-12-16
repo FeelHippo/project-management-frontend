@@ -8,12 +8,15 @@ export const connectionURI =
   process.env.CORE_API_ENDPOINT ??
   'https://OBTAIN_THIS_FROM_ADMIN.aws.supertokens.io';
 
+export const apiKey =
+  process.env.SUPERTOKENS_API_KEY ?? 'OBTAIN_THIS_FROM_ADMIN';
+
 export const backendConfig = (): TypeInput => {
   return {
     framework: 'custom',
     supertokens: {
       connectionURI,
-      apiKey: process.env.SUPERTOKENS_API_KEY ?? 'OBTAIN_THIS_FROM_ADMIN',
+      apiKey,
     },
     appInfo,
     recipeList: [EmailPasswordNode.init(), SessionNode.init()],

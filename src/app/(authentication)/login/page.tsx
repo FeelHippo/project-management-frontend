@@ -1,7 +1,7 @@
 'use client';
 
 import LoginForm from '@/components/forms/login';
-import PageHeader from '@/components/page_header';
+import PageHeader from '@/components/pageHeader';
 import { useEffect, useRef, useState } from 'react';
 export default function Page() {
   const [width, updateWidth] = useState<number>(0);

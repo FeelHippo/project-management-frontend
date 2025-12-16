@@ -11,7 +11,7 @@ export const TryRefreshComponent = () => {
     void Session.attemptRefreshingSession()
       .then((hasSession) => {
         if (hasSession) {
-          router.refresh();
+            redirect('/dashboard');
         } else {
           /**
            * This means that the session is expired and cannot be refreshed.
