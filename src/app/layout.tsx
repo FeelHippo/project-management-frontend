@@ -4,6 +4,7 @@ import './globals.css';
 import React from 'react';
 import { SupertokensInit } from '@/components/supertokensInit';
 import { Toaster } from 'sonner';
+import Providers from './providers';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -31,7 +32,7 @@ export default function RootLayout({
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
-          {children}
+          <Providers>{children}</Providers>
           <Toaster />
         </body>
       </SupertokensInit>
