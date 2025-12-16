@@ -1,0 +1,30 @@
+version: 1
+project-management-frontend:
+  phases:
+    preBuild:
+      commands:
+        - npm install --legacy-peer-deps
+    build:
+      commands:
+        # Critical Next.js fix for Amplify
+        - echo "__NEXT_PRIVATE_PREBUNDLED_REACT=next" >> .env.production
+
+        # Inject environment variables from Amplify Console
+        - echo "NEXTAUTH_URL=$NEXTAUTH_URL" >> .env.production
+        - echo "NEXTAUTH_SECRET=$NEXTAUTH_SECRET" >> .env.production
+        - echo "GOOGLE_CLIENT_ID=$GOOGLE_CLIENT_ID" >> .env.production
+
+        # Add any other environment variables you need here
+        - echo "CORE_API_ENDPOINT=$CORE_API_ENDPOINT" >> .env.production
+        - echo "SUPERTOKENS_API_KEY=$SUPERTOKENS_API_KEY" >> .env.production
+        - echo "BASE_URL=$BASE_URL" >> .env.production
+
+        - npm run build
+  artifacts:
+    baseDirectory: .next
+    files:
+      - '**/*'
+  cache:
+    paths:
+      - .next/cache/**/*
+      - node_modules/**/*
