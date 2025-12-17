@@ -1,14 +1,6 @@
 'use client';
 
-import {
-  Calendar,
-  ChevronUp,
-  Home,
-  Inbox,
-  Search,
-  Settings,
-  User2,
-} from 'lucide-react';
+import { ChevronUp, Settings, User2, LogOut } from 'lucide-react';
 
 import {
   Sidebar,
@@ -28,58 +20,24 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import Session from 'supertokens-web-js/recipe/session';
-
-const items = [
-  {
-    title: 'Home',
-    url: '#',
-    icon: Home,
-  },
-  {
-    title: 'Inbox',
-    url: '#',
-    icon: Inbox,
-  },
-  {
-    title: 'Calendar',
-    url: '#',
-    icon: Calendar,
-  },
-  {
-    title: 'Search',
-    url: '#',
-    icon: Search,
-  },
-  {
-    title: 'Settings',
-    url: '#',
-    icon: Settings,
-  },
-];
+import SideBarList from '@/components/projects/sidebarList';
+import { UserContext } from '@/app/providers/context';
+import { useContext } from 'react';
 
 export function AppSidebar() {
+  const userContext = useContext(UserContext);
   async function logout() {
     await Session.signOut();
+    userContext?.setUser('');
     window.location.href = '/login'; // or to wherever your logic page is
   }
   return (
     <Sidebar>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Application</SidebarGroupLabel>
+          <SidebarGroupLabel>Project Management</SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu>
-              {items.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <a href={item.url}>
-                      <item.icon />
-                      <span>{item.title}</span>
-                    </a>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
+            <SideBarList />
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
@@ -89,7 +47,8 @@ export function AppSidebar() {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <SidebarMenuButton>
-                  <User2 /> Username
+                  <User2 />{' '}
+                  {!!userContext?.user ? userContext.user : 'User Profile'}
                   <ChevronUp className="ml-auto" />
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
@@ -98,6 +57,11 @@ export function AppSidebar() {
                 className="w-[var(--radix-popper-anchor-width)]"
               >
                 <DropdownMenuItem onSelect={async () => await logout()}>
+                  <Settings />
+                  <span>Settings</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem onSelect={async () => await logout()}>
+                  <LogOut />
                   <span>Sign out</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>

@@ -9,6 +9,8 @@ import { Field, FieldError, FieldGroup } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { signIn } from 'supertokens-web-js/recipe/emailpassword';
+import { UserContext } from '@/app/providers/context';
+import { useContext } from 'react';
 
 export interface AuthenticationFormInterface {
   text: string;
@@ -25,6 +27,7 @@ export const uniqueTextInputs = [
 ];
 
 function LoginForm({ text, width }: AuthenticationFormInterface) {
+  const userContext = useContext(UserContext);
   const form = useForm({
     defaultValues: uniqueTextInputs.reduce(
       (acc, { name }) => (acc = { ...acc, [name]: '' }),
@@ -39,6 +42,7 @@ function LoginForm({ text, width }: AuthenticationFormInterface) {
           EMAIL: string;
           PASSWORD: string;
         };
+        userContext?.setUser(EMAIL);
         const response = await signIn({
           formFields: [
             {

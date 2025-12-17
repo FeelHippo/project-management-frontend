@@ -10,6 +10,7 @@ import { getProjects } from '@/hooks/projects';
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/components/sidebar/appSidebar';
 import React from 'react';
+import QueryProvider from '@/app/providers/query';
 
 export default async function HomeLayout({
   children,
@@ -25,14 +26,16 @@ export default async function HomeLayout({
   const cookieStore = await cookies();
   const defaultOpen = cookieStore.get('sidebar_state')?.value === 'true';
   return (
-    <HydrationBoundary state={dehydrate(queryClient)}>
-      <SidebarProvider defaultOpen={defaultOpen}>
-        <AppSidebar />
-        <main>
-          <SidebarTrigger />
-          {children}
-        </main>
-      </SidebarProvider>
-    </HydrationBoundary>
+    <QueryProvider>
+      <HydrationBoundary state={dehydrate(queryClient)}>
+        <SidebarProvider defaultOpen={defaultOpen}>
+          <AppSidebar />
+          <main>
+            <SidebarTrigger />
+            {children}
+          </main>
+        </SidebarProvider>
+      </HydrationBoundary>
+    </QueryProvider>
   );
 }
