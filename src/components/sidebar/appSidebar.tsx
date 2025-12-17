@@ -34,9 +34,9 @@ export function AppSidebar() {
   return (
     <Sidebar>
       <SidebarContent>
-        <SidebarGroup>
+        <SidebarGroup className="h-[100%]">
           <SidebarGroupLabel>Project Management</SidebarGroupLabel>
-          <SidebarGroupContent>
+          <SidebarGroupContent  className="h-[100%]" >
             <SideBarList />
           </SidebarGroupContent>
         </SidebarGroup>

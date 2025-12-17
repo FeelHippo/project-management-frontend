@@ -1,7 +1,7 @@
 'use client';
 
 import { type Table } from '@tanstack/react-table';
-import { X } from 'lucide-react';
+import {Plus, X} from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { DataTableFacetedFilter } from '@/components/table/filter';
 import { statuses } from '@/components/table/data/status';
@@ -46,7 +46,7 @@ export function DataTableToolbar<Data>({ table }: DataTableToolbarProps<Data>) {
       </div>
       <div className="flex items-center gap-2">
         <DataTableViewOptions table={table} />
-        <Button size="sm">Add Task</Button>
+        <Button size="sm"><Plus /></Button>
       </div>
     </div>
   );

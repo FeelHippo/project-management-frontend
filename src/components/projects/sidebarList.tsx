@@ -11,13 +11,9 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import {
-  Column,
-  ColumnDef,
   ColumnFiltersState,
-  RowData,
   flexRender,
   getCoreRowModel,
-  getFacetedMinMaxValues,
   getFacetedRowModel,
   getFacetedUniqueValues,
   getFilteredRowModel,
@@ -79,9 +75,9 @@ export default function SidebarList() {
   // You can use the <Table /> component to build more complex data tables.
   // Combine it with @tanstack/react-table to create tables with sorting, filtering and pagination.
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 h-full">
       <DataTableToolbar table={table} />
-      <div className="overflow-hidden rounded-md border">
+      <div className="overflow-scroll rounded-md border size-full">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
