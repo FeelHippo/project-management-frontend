@@ -1,9 +1,38 @@
+import { cookies } from 'next/headers';
+
+import {
+  dehydrate,
+  HydrationBoundary,
+  QueryClient,
+} from '@tanstack/react-query';
+import { getProjects } from '@/hooks/projects';
+
+import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
+import { AppSidebar } from '@/components/sidebar/appSidebar';
 import React from 'react';
 
-export default function HomeLayout({
+export default async function HomeLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return <section>{children}</section>;
+  const queryClient = new QueryClient();
+
+  await queryClient.prefetchQuery({
+    queryKey: ['projects'],
+    queryFn: getProjects,
+  });
+  const cookieStore = await cookies();
+  const defaultOpen = cookieStore.get('sidebar_state')?.value === 'true';
+  return (
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <SidebarProvider defaultOpen={defaultOpen}>
+        <AppSidebar />
+        <main>
+          <SidebarTrigger />
+          {children}
+        </main>
+      </SidebarProvider>
+    </HydrationBoundary>
+  );
 }

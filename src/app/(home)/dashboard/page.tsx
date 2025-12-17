@@ -1,22 +1,22 @@
-import {
-  dehydrate,
-  HydrationBoundary,
-  QueryClient,
-} from '@tanstack/react-query';
-import { getProjects } from '@/hooks/projects';
+'use client';
+
 import SideBarList from '@/components/projects/sidebarList';
+import Session from 'supertokens-web-js/recipe/session';
+import { useEffect } from 'react';
 
 export default async function Dashboard() {
-  const queryClient = new QueryClient();
-
-  await queryClient.prefetchQuery({
-    queryKey: ['projects'],
-    queryFn: getProjects,
-  });
-
+  // TODO(Filippo): avoid flash navigation to dashboard if user has no session
+  // protect this route frm direct navigation
+  useEffect(() => {
+    (async () => {
+      if (!(await Session.doesSessionExist())) {
+        window.location.href = '/login';
+      }
+    })();
+  }, []);
   return (
-    <HydrationBoundary state={dehydrate(queryClient)}>
+    <div>
       <SideBarList />
-    </HydrationBoundary>
+    </div>
   );
 }

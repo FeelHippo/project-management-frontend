@@ -13,7 +13,7 @@ type Project = {
 };
 
 export const getProjects = async (): Promise<Project[]> => {
-  const response = await fetch(`http://project-management-backend-env.eba-srcjwhmq.eu-west-1.elasticbeanstalk.com/api/projects`, {
+  const response = await fetch(`${process.env.BASE_URL}/api/projects`, {
     headers: {
       'x-api-key': 'sXQ8vYFpo6RjtAopYshisaToSzxRnEB5',
     },

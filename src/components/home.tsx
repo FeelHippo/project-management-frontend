@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation';
 import { TryRefreshComponent } from '@/components/tryRefreshClientComponent';
 import { connectionURI } from '@/app/config/backendConfig';
 import jwksClient from 'jwks-rsa';
-import JsonWebToken from 'jsonwebtoken';
+import JsonWebToken, { TokenExpiredError } from 'jsonwebtoken';
 import type { JwtHeader, JwtPayload, SigningKeyCallback } from 'jsonwebtoken';
 
 // Configure the client
@@ -73,31 +73,18 @@ async function getSSRSessionHelper(): Promise<{
 export default async function HomePage() {
   const { accessTokenPayload, hasToken, error } = await getSSRSessionHelper();
 
-  if (error) {
-    return (
-      <div>
-        Something went wrong while trying to get the session. Error -{' '}
-        {error instanceof Error && error.message}
-      </div>
-    );
+  // token expired naturally
+  if (error instanceof TokenExpiredError) {
+    return redirect('/login');
   }
 
   // `accessTokenPayload` will be undefined if the session does not exist or has expired
-  if (accessTokenPayload === undefined) {
+  if (accessTokenPayload === undefined || !!error) {
+    // no token at all, i.e. new user or user logged out
     if (!hasToken) {
-      /**
-       * This means that the user is not logged in. If you want to display some other UI in this
-       * case, you can do so here.
-       */
       return redirect('/registration');
     }
-
-    /**
-     * This means that the session does not exist, but we have session tokens for the user. In this case
-     * the `TryRefreshComponent` will try to refresh the session.
-     *
-     * To learn about why the 'key' attribute is required refer to: https://github.com/supertokens/supertokens-node/issues/826#issuecomment-2092144048
-     */
+    // try automatic refresh
     return <TryRefreshComponent key={Date.now()} />;
   }
 
