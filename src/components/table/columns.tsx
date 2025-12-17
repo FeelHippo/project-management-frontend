@@ -35,11 +35,17 @@ export const columns: ColumnDef<Project>[] = [
   },
   {
     accessorKey: 'title',
-      filterFn: (row, columnId, filterValue) => {
-          return `${row.original.name} ${row.original.description}`.includes(filterValue);
-      },
+    filterFn: (row, columnId, filterValue) => {
+      return `${row.original.name} ${row.original.description}`.includes(
+        filterValue,
+      );
+    },
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} className="translate-x-[4px]" title="Name and Description" />
+      <DataTableColumnHeader
+        column={column}
+        className="translate-x-[4px]"
+        title="Name and Description"
+      />
     ),
     cell: ({ row }) => {
       const label = row.original.name;

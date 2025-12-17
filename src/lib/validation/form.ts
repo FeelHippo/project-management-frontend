@@ -67,3 +67,15 @@ export const loginFormSchema = z
     message: 'Invalid Password',
     path: ['PASSWORD'],
   });
+
+export const projectFormSchema = z.object<{
+  name: z.ZodString;
+  description: z.ZodString;
+  tags: z.ZodArray;
+}>({
+  name: z.string().max(64, 'Name should be at most 64 characters.'),
+  description: z
+    .string()
+    .max(120, 'Description should be at most 120 characters.'),
+  tags: z.array(z.string()),
+});

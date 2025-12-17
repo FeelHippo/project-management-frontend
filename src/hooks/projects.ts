@@ -24,3 +24,15 @@ export const getProjects = async (): Promise<Project[]> => {
   }
   return data.projects;
 };
+
+export const postProject = async (project: Partial<Project>): Promise<void> => {
+  await fetch(`${process.env.BASE_URL}/api/projects`, {
+    method: 'POST',
+    headers: {
+      'User-Agent': 'undici-stream-example',
+      'Content-Type': 'application/json',
+      'x-api-key': 'sXQ8vYFpo6RjtAopYshisaToSzxRnEB5',
+    },
+    body: JSON.stringify(project),
+  });
+};

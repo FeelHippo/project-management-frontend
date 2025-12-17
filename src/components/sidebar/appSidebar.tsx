@@ -36,7 +36,7 @@ export function AppSidebar() {
       <SidebarContent>
         <SidebarGroup className="h-[100%]">
           <SidebarGroupLabel>Project Management</SidebarGroupLabel>
-          <SidebarGroupContent  className="h-[100%]" >
+          <SidebarGroupContent className="h-[100%]">
             <SideBarList />
           </SidebarGroupContent>
         </SidebarGroup>
