@@ -46,7 +46,7 @@ function RegistrationForm({ text, width }: AuthenticationFormInterface) {
           EMAIL: string;
           PASSWORD: string;
         };
-        let response = await signUp({
+        const response = await signUp({
           formFields: [
             {
               id: 'email',

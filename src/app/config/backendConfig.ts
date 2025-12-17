@@ -5,11 +5,10 @@ import { appInfo } from './appInfo';
 import { TypeInput } from 'supertokens-node/types';
 
 export const connectionURI =
-  process.env.CORE_API_ENDPOINT ??
-  'https://OBTAIN_THIS_FROM_ADMIN.aws.supertokens.io';
+  'https://st-dev-798e6a21-a828-11f0-b07f-4d69ddbd6bba.aws.supertokens.io';
 
 export const apiKey =
-  process.env.SUPERTOKENS_API_KEY ?? 'OBTAIN_THIS_FROM_ADMIN';
+  'KORnI1hM=2P1sjbJfZKRWiqu4n';
 
 export const backendConfig = (): TypeInput => {
   return {

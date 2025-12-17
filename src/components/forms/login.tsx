@@ -39,7 +39,7 @@ function LoginForm({ text, width }: AuthenticationFormInterface) {
           EMAIL: string;
           PASSWORD: string;
         };
-        let response = await signIn({
+        const response = await signIn({
           formFields: [
             {
               id: 'email',
