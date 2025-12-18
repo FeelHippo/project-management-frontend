@@ -29,13 +29,14 @@ import { DataTableToolbar } from '@/components/table/toolbar';
 import { DataTablePagination } from '@/components/table/pagination';
 
 export default function SidebarList() {
-
-  // Reccommended query creation
+  // Recommended query creation
   // https://github.com/TanStack/query/discussions/846#discussioncomment-13454614
-  const { data } = useQuery(queryOptions({
+  const { data } = useQuery(
+    queryOptions({
       queryKey: ['projects'],
       queryFn: () => getProjects(),
-  }));
+    }),
+  );
 
   if (!data) return null;
   const [rowSelection, setRowSelection] = React.useState({});

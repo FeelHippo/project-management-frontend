@@ -26,3 +26,15 @@ export const postProject = async (project: Partial<Project>): Promise<void> => {
     body: JSON.stringify(project),
   });
 };
+
+export const deleteProject = async (uids: string[]): Promise<void> => {
+  for (const uid of uids) {
+    await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/projects/${uid}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': 'sXQ8vYFpo6RjtAopYshisaToSzxRnEB5',
+      },
+    });
+  }
+};

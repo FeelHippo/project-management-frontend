@@ -1,7 +1,7 @@
 'use client';
 
 import { type Table } from '@tanstack/react-table';
-import { Plus, Tag, X } from 'lucide-react';
+import { Plus, Tag, X, Trash2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { DataTableFacetedFilter } from '@/components/table/filter';
 import { statuses } from '@/components/table/data/status';
@@ -22,12 +22,13 @@ import { useForm } from '@tanstack/react-form';
 import { projectFormSchema } from '@/lib/validation/form';
 import { toast } from 'sonner';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { postProject } from '@/hooks/projects';
+import { deleteProject, postProject } from '@/hooks/projects';
 import { Spinner } from '@/components/ui/spinner';
 import { Field, FieldError, FieldGroup } from '@/components/ui/field';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
-import {Project, Tags} from '@/lib/interfaces/project';
+import { Project, Tags } from '@/lib/interfaces/project';
 import React from 'react';
+import { Row } from 'jackspeak';
 
 interface DataTableToolbarProps<Data> {
   table: Table<Data>;
@@ -35,22 +36,42 @@ interface DataTableToolbarProps<Data> {
 
 export function DataTableToolbar<Data>({ table }: DataTableToolbarProps<Data>) {
   const [open, setOpen] = React.useState(false);
+  const [openDelete, setOpenDelete] = React.useState(false);
   const isFiltered = table.getState().columnFilters.length > 0;
 
   // https://tanstack.com/query/v5/docs/framework/react/guides/optimistic-updates#updating-a-list-of-todos-when-adding-a-new-todo
   const mutation = useMutation({
     mutationFn: postProject,
-      onMutate: async (newProject, context) => {
-          await context.client.cancelQueries({ queryKey: ['projects'] });
-          const data = context.client.getQueryData(['projects']);
-          context.client.setQueryData(['projects'], (old: Project[]) => [...old, newProject]);
-          return { data }
-      },
-      onError: (err, newTodo, onMutateResult, context) => {
-          context.client.setQueryData(['projects'], onMutateResult?.data ?? []);
-      },
-      onSettled: (data, error, variables, onMutateResult, context) =>
-          context.client.invalidateQueries({ queryKey: ['projects'] }),
+    onMutate: async (newProject, context) => {
+      await context.client.cancelQueries({ queryKey: ['projects'] });
+      const data = context.client.getQueryData(['projects']);
+      context.client.setQueryData(['projects'], (old: Project[]) => [
+        ...old,
+        newProject,
+      ]);
+      return { data };
+    },
+    onError: (err, newTodo, onMutateResult, context) => {
+      context.client.setQueryData(['projects'], onMutateResult?.data ?? []);
+    },
+    onSettled: (data, error, variables, onMutateResult, context) =>
+      context.client.invalidateQueries({ queryKey: ['projects'] }),
+  });
+  const mutationDelete = useMutation({
+    mutationFn: (uids: string[]) => deleteProject(uids),
+    onMutate: async (deletedUids, context) => {
+      await context.client.cancelQueries({ queryKey: ['projects'] });
+      const data = context.client.getQueryData(['projects']);
+      context.client.setQueryData(['projects'], (old: Project[]) =>
+        old.filter((project) => !deletedUids.includes(project.uid)),
+      );
+      return { data };
+    },
+    onError: (err, newTodo, onMutateResult, context) => {
+      context.client.setQueryData(['projects'], onMutateResult?.data ?? []);
+    },
+    onSettled: (data, error, variables, onMutateResult, context) =>
+      context.client.invalidateQueries({ queryKey: ['projects'] }),
   });
 
   const form = useForm({
@@ -112,6 +133,42 @@ export function DataTableToolbar<Data>({ table }: DataTableToolbarProps<Data>) {
         )}
       </div>
       <div className="flex items-center gap-2">
+        {table.getIsSomeRowsSelected() && (
+          <Dialog open={openDelete} onOpenChange={setOpenDelete}>
+            <DialogTrigger asChild>
+              <Button size="sm">
+                <Trash2 />
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader className="h-16">
+                <DialogTitle>Delete Project(s)</DialogTitle>
+                <DialogDescription>
+                  WARNING: this action cannot be undone.
+                </DialogDescription>
+              </DialogHeader>
+              <DialogFooter>
+                <DialogClose asChild>
+                  <Button variant="outline">Cancel</Button>
+                </DialogClose>
+                <Button
+                  type="submit"
+                  onClick={() => {
+                    mutationDelete.mutate(
+                      table.getSelectedRowModel().rows.map((row) => {
+                        const rowData = row.original as Project;
+                        return rowData.uid;
+                      }),
+                    );
+                    setOpenDelete(false);
+                  }}
+                >
+                  {mutationDelete.isPending ? <Spinner /> : 'Confirm'}
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        )}
         <DataTableViewOptions table={table} />
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
