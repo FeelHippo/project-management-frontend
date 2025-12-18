@@ -3,7 +3,7 @@
 import { type ColumnDef } from '@tanstack/react-table';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
-import { Project } from '@/hooks/projects';
+import { Project } from '@/lib/interfaces/project';
 import { DataTableColumnHeader } from '@/components/table/columnHeader';
 import { statuses } from '@/components/table/data/status';
 import { ChevronRight } from 'lucide-react';

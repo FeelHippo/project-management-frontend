@@ -21,21 +21,36 @@ import { Label } from '@/components/ui/label';
 import { useForm } from '@tanstack/react-form';
 import { projectFormSchema } from '@/lib/validation/form';
 import { toast } from 'sonner';
-import { useMutation } from '@tanstack/react-query';
-import { postProject, Project } from '@/hooks/projects';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { postProject } from '@/hooks/projects';
 import { Spinner } from '@/components/ui/spinner';
 import { Field, FieldError, FieldGroup } from '@/components/ui/field';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+import {Project, Tags} from '@/lib/interfaces/project';
+import React from 'react';
 
 interface DataTableToolbarProps<Data> {
   table: Table<Data>;
 }
 
 export function DataTableToolbar<Data>({ table }: DataTableToolbarProps<Data>) {
+  const [open, setOpen] = React.useState(false);
   const isFiltered = table.getState().columnFilters.length > 0;
 
+  // https://tanstack.com/query/v5/docs/framework/react/guides/optimistic-updates#updating-a-list-of-todos-when-adding-a-new-todo
   const mutation = useMutation({
     mutationFn: postProject,
+      onMutate: async (newProject, context) => {
+          await context.client.cancelQueries({ queryKey: ['projects'] });
+          const data = context.client.getQueryData(['projects']);
+          context.client.setQueryData(['projects'], (old: Project[]) => [...old, newProject]);
+          return { data }
+      },
+      onError: (err, newTodo, onMutateResult, context) => {
+          context.client.setQueryData(['projects'], onMutateResult?.data ?? []);
+      },
+      onSettled: (data, error, variables, onMutateResult, context) =>
+          context.client.invalidateQueries({ queryKey: ['projects'] }),
   });
 
   const form = useForm({
@@ -55,6 +70,7 @@ export function DataTableToolbar<Data>({ table }: DataTableToolbarProps<Data>) {
           tags: string[];
         };
         mutation.mutate({ name, description, tags });
+        setOpen(false);
         toast.message('New Project created.');
       } catch (err: any) {
         if (err.isSuperTokensGeneralError === true) {
@@ -97,7 +113,7 @@ export function DataTableToolbar<Data>({ table }: DataTableToolbarProps<Data>) {
       </div>
       <div className="flex items-center gap-2">
         <DataTableViewOptions table={table} />
-        <Dialog>
+        <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
             <Button size="sm">
               <Plus />
@@ -178,22 +194,27 @@ export function DataTableToolbar<Data>({ table }: DataTableToolbarProps<Data>) {
                       variant="outline"
                       spacing={2}
                       size="sm"
+                      className="flex-wrap"
                     >
-                      {['dog', 'cat', 'horse'].map((tag: string, index) => (
+                      {Object.values(Tags).map((tag: string, index) => (
                         <form.Field
-                            key={index}
+                          key={index}
                           name="tags"
                           children={(field) => {
                             return (
-                              <Field>
+                              <Field className="w-fit">
                                 <ToggleGroupItem
                                   value={tag}
                                   aria-label="Toggle star"
-                                  onClick={() => field.state.value.includes(tag) ? field.removeValue(index) : field.pushValue(tag)}
+                                  onClick={() =>
+                                    field.state.value.includes(tag)
+                                      ? field.removeValue(index)
+                                      : field.pushValue(tag)
+                                  }
                                   className="data-[state=on]:bg-transparent data-[state=on]:*:[svg]:fill-yellow-500 data-[state=on]:*:[svg]:stroke-yellow-500"
                                 >
                                   <Tag />
-                                    {tag}
+                                  {tag}
                                 </ToggleGroupItem>
                               </Field>
                             );
