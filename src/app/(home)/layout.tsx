@@ -30,7 +30,7 @@ export default async function HomeLayout({
       <HydrationBoundary state={dehydrate(queryClient)}>
         <SidebarProvider defaultOpen={defaultOpen}>
           <AppSidebar />
-          <main>
+          <main className="w-full h-full">
             <SidebarTrigger />
             {children}
           </main>

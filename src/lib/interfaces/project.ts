@@ -5,9 +5,9 @@ export type Project = {
   tags: string[];
   status: string;
   createdAt: string;
-  updatedAt: string;
+  updatedAt: string | null;
   wasUpdated: boolean;
-  archivedAt: string;
+  archivedAt: string | null;
   wasArchived: boolean;
   isStoredOnDB: boolean;
 };

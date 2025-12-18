@@ -1,6 +1,6 @@
 'use client';
 
-import { queryOptions, useQuery } from '@tanstack/react-query';
+import { queryOptions, useQuery, useQueryClient } from '@tanstack/react-query';
 import { getProjects } from '@/hooks/projects';
 import {
   Table,
@@ -29,6 +29,7 @@ import { DataTableToolbar } from '@/components/table/toolbar';
 import { DataTablePagination } from '@/components/table/pagination';
 
 export default function SidebarList() {
+  const queryClient = useQueryClient();
   // Recommended query creation
   // https://github.com/TanStack/query/discussions/846#discussioncomment-13454614
   const { data } = useQuery(
@@ -37,6 +38,15 @@ export default function SidebarList() {
       queryFn: () => getProjects(),
     }),
   );
+
+  if (data) {
+    // set initial project to the most recent. This is arbitrary and can/should be improved
+    const mostRecentProject = data.sort((a, b) =>
+      a.createdAt < b.createdAt ? 1 : -1,
+    )[0];
+    // https://tanstack.com/query/v4/docs/framework/react/guides/prefetching#manually-priming-a-query
+    queryClient.setQueryData(['detailUid'], mostRecentProject.uid);
+  }
 
   if (!data) return null;
   const [rowSelection, setRowSelection] = React.useState({});

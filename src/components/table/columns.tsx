@@ -7,6 +7,8 @@ import { Project } from '@/lib/interfaces/project';
 import { DataTableColumnHeader } from '@/components/table/columnHeader';
 import { statuses } from '@/components/table/data/status';
 import { ChevronRight } from 'lucide-react';
+import { useQueryClient } from '@tanstack/react-query';
+import { mutationDetails } from '@/mutations/projects';
 
 export const columns: ColumnDef<Project>[] = [
   {
@@ -91,10 +93,11 @@ export const columns: ColumnDef<Project>[] = [
     id: 'actions',
     cell: ({ row }) => {
       const uid = row.original.uid;
+      const showDetailsOfProject = mutationDetails();
 
       return (
         <div className="flex gap-2">
-          <ChevronRight onClick={() => console.log('NAVIGATE TO DETAILS')} />
+          <ChevronRight onClick={() => showDetailsOfProject.mutate(uid)} />
         </div>
       );
     },

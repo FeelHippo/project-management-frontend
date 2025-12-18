@@ -21,58 +21,24 @@ import { Label } from '@/components/ui/label';
 import { useForm } from '@tanstack/react-form';
 import { projectFormSchema } from '@/lib/validation/form';
 import { toast } from 'sonner';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { deleteProject, postProject } from '@/hooks/projects';
 import { Spinner } from '@/components/ui/spinner';
 import { Field, FieldError, FieldGroup } from '@/components/ui/field';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { Project, Tags } from '@/lib/interfaces/project';
 import React from 'react';
-import { Row } from 'jackspeak';
+import { mutationPost, mutationDelete } from '@/mutations/projects';
 
 interface DataTableToolbarProps<Data> {
   table: Table<Data>;
 }
 
 export function DataTableToolbar<Data>({ table }: DataTableToolbarProps<Data>) {
+  const postProject = mutationPost();
+  const deleteProject = mutationDelete();
+
   const [open, setOpen] = React.useState(false);
   const [openDelete, setOpenDelete] = React.useState(false);
   const isFiltered = table.getState().columnFilters.length > 0;
-
-  // https://tanstack.com/query/v5/docs/framework/react/guides/optimistic-updates#updating-a-list-of-todos-when-adding-a-new-todo
-  const mutation = useMutation({
-    mutationFn: postProject,
-    onMutate: async (newProject, context) => {
-      await context.client.cancelQueries({ queryKey: ['projects'] });
-      const data = context.client.getQueryData(['projects']);
-      context.client.setQueryData(['projects'], (old: Project[]) => [
-        ...old,
-        newProject,
-      ]);
-      return { data };
-    },
-    onError: (err, newTodo, onMutateResult, context) => {
-      context.client.setQueryData(['projects'], onMutateResult?.data ?? []);
-    },
-    onSettled: (data, error, variables, onMutateResult, context) =>
-      context.client.invalidateQueries({ queryKey: ['projects'] }),
-  });
-  const mutationDelete = useMutation({
-    mutationFn: (uids: string[]) => deleteProject(uids),
-    onMutate: async (deletedUids, context) => {
-      await context.client.cancelQueries({ queryKey: ['projects'] });
-      const data = context.client.getQueryData(['projects']);
-      context.client.setQueryData(['projects'], (old: Project[]) =>
-        old.filter((project) => !deletedUids.includes(project.uid)),
-      );
-      return { data };
-    },
-    onError: (err, newTodo, onMutateResult, context) => {
-      context.client.setQueryData(['projects'], onMutateResult?.data ?? []);
-    },
-    onSettled: (data, error, variables, onMutateResult, context) =>
-      context.client.invalidateQueries({ queryKey: ['projects'] }),
-  });
 
   const form = useForm({
     defaultValues: {
@@ -90,7 +56,7 @@ export function DataTableToolbar<Data>({ table }: DataTableToolbarProps<Data>) {
           description: string;
           tags: string[];
         };
-        mutation.mutate({ name, description, tags });
+        postProject.mutate({ name, description, tags });
         setOpen(false);
         toast.message('New Project created.');
       } catch (err: any) {
@@ -154,16 +120,17 @@ export function DataTableToolbar<Data>({ table }: DataTableToolbarProps<Data>) {
                 <Button
                   type="submit"
                   onClick={() => {
-                    mutationDelete.mutate(
+                    deleteProject.mutate(
                       table.getSelectedRowModel().rows.map((row) => {
                         const rowData = row.original as Project;
                         return rowData.uid;
                       }),
                     );
+                    table.toggleAllRowsSelected(false);
                     setOpenDelete(false);
                   }}
                 >
-                  {mutationDelete.isPending ? <Spinner /> : 'Confirm'}
+                  {deleteProject.isPending ? <Spinner /> : 'Confirm'}
                 </Button>
               </DialogFooter>
             </DialogContent>
@@ -287,7 +254,7 @@ export function DataTableToolbar<Data>({ table }: DataTableToolbarProps<Data>) {
                   <Button variant="outline">Cancel</Button>
                 </DialogClose>
                 <Button type="submit" form="project-form">
-                  {mutation.isPending ? <Spinner /> : 'Save changes'}
+                  {postProject.isPending ? <Spinner /> : 'Save changes'}
                 </Button>
               </DialogFooter>
             </form>

@@ -3,8 +3,8 @@ import { JSX } from 'react';
 export default function GradientBackground(props: {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   gradients: any[];
-  title: string;
-  subtitle: string;
+  title?: string;
+  subtitle?: string;
 }): JSX.Element {
   return (
     <div className="hidden md:flex">
@@ -26,18 +26,22 @@ export default function GradientBackground(props: {
           )}
         </div>
       ))}
-      <div
-        className="font-sans font-extrabold text-7xl"
-        style={{ position: 'absolute', top: '66vh', left: '5vw' }}
-      >
-        {props.title}
-      </div>
-      <div
-        className="font-sans text-5xl"
-        style={{ position: 'absolute', top: '77vh', left: '5vw' }}
-      >
-        {props.subtitle}
-      </div>
+      {props.title && (
+        <div
+          className="font-sans font-extrabold text-7xl"
+          style={{ position: 'absolute', top: '66vh', left: '5vw' }}
+        >
+          {props.title}
+        </div>
+      )}
+      {props.subtitle && (
+        <div
+          className="font-sans text-5xl"
+          style={{ position: 'absolute', top: '77vh', left: '5vw' }}
+        >
+          {props.subtitle}
+        </div>
+      )}
     </div>
   );
 }
