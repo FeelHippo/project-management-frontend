@@ -1,7 +1,7 @@
 'use client';
 
 import { type Table } from '@tanstack/react-table';
-import { Plus, X } from 'lucide-react';
+import { Plus, Tag, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { DataTableFacetedFilter } from '@/components/table/filter';
 import { statuses } from '@/components/table/data/status';
@@ -23,8 +23,9 @@ import { projectFormSchema } from '@/lib/validation/form';
 import { toast } from 'sonner';
 import { useMutation } from '@tanstack/react-query';
 import { postProject, Project } from '@/hooks/projects';
-import {Spinner} from "@/components/ui/spinner";
-import {Field, FieldError} from "@/components/ui/field";
+import { Spinner } from '@/components/ui/spinner';
+import { Field, FieldError, FieldGroup } from '@/components/ui/field';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 
 interface DataTableToolbarProps<Data> {
   table: Table<Data>;
@@ -48,13 +49,13 @@ export function DataTableToolbar<Data>({ table }: DataTableToolbarProps<Data>) {
     },
     onSubmit: async ({ value }) => {
       try {
-          const { name, description, tags } = value as {
-              name: string;
-              description: string;
-              tags: string[],
-          };
-          mutation.mutate({ name, description, tags });
-          toast.message('New Project created.');
+        const { name, description, tags } = value as {
+          name: string;
+          description: string;
+          tags: string[];
+        };
+        mutation.mutate({ name, description, tags });
+        toast.message('New Project created.');
       } catch (err: any) {
         if (err.isSuperTokensGeneralError === true) {
           toast.error(err.message);
@@ -120,55 +121,87 @@ export function DataTableToolbar<Data>({ table }: DataTableToolbarProps<Data>) {
               <div className="grid gap-4 my-8">
                 <div className="grid gap-4">
                   <Label htmlFor="name">Name</Label>
-                    <form.Field
-                        name="name"
-                        children={(field) => {
-                            const isInvalid =
-                                field.state.meta.isTouched && !field.state.meta.isValid;
-                            return (
-                                <Field data-invalid={isInvalid}>
-                                    <Input
-                                        id="name"
-                                        name="name"
-                                        value={field.state.value as string}
-                                        onBlur={field.handleBlur}
-                                        onChange={(e) => field.handleChange(e.target.value)}
-                                        autoComplete="off"
-                                        aria-invalid={isInvalid}
-                                    />
-                                    {isInvalid && (
-                                        <FieldError errors={field.state.meta.errors} />
-                                    )}
-                                </Field>
-                            );
-                        }}
-                    ></form.Field>
+                  <form.Field
+                    name="name"
+                    children={(field) => {
+                      const isInvalid =
+                        field.state.meta.isTouched && !field.state.meta.isValid;
+                      return (
+                        <Field data-invalid={isInvalid}>
+                          <Input
+                            id="name"
+                            name="name"
+                            value={field.state.value as string}
+                            onBlur={field.handleBlur}
+                            onChange={(e) => field.handleChange(e.target.value)}
+                            autoComplete="off"
+                            aria-invalid={isInvalid}
+                          />
+                          {isInvalid && (
+                            <FieldError errors={field.state.meta.errors} />
+                          )}
+                        </Field>
+                      );
+                    }}
+                  ></form.Field>
                 </div>
                 <div className="grid gap-4">
                   <Label htmlFor="description">Description</Label>
-                    <form.Field
-                        name="description"
-                        children={(field) => {
-                            const isInvalid =
-                                field.state.meta.isTouched && !field.state.meta.isValid;
+                  <form.Field
+                    name="description"
+                    children={(field) => {
+                      const isInvalid =
+                        field.state.meta.isTouched && !field.state.meta.isValid;
+                      return (
+                        <Field data-invalid={isInvalid}>
+                          <Input
+                            id="description"
+                            name="description"
+                            value={field.state.value as string}
+                            onBlur={field.handleBlur}
+                            onChange={(e) => field.handleChange(e.target.value)}
+                            autoComplete="off"
+                            aria-invalid={isInvalid}
+                          />
+                          {isInvalid && (
+                            <FieldError errors={field.state.meta.errors} />
+                          )}
+                        </Field>
+                      );
+                    }}
+                  ></form.Field>
+                </div>
+                <div className="grid gap-4">
+                  <FieldGroup>
+                    <ToggleGroup
+                      type="multiple"
+                      variant="outline"
+                      spacing={2}
+                      size="sm"
+                    >
+                      {['dog', 'cat', 'horse'].map((tag: string, index) => (
+                        <form.Field
+                            key={index}
+                          name="tags"
+                          children={(field) => {
                             return (
-                                <Field data-invalid={isInvalid}>
-                                    <Input
-                                        id="description"
-                                        name="description"
-                                        value={field.state.value as string}
-                                        onBlur={field.handleBlur}
-                                        onChange={(e) => field.handleChange(e.target.value)}
-                                        autoComplete="off"
-                                        aria-invalid={isInvalid}
-                                    />
-                                    {isInvalid && (
-                                        <FieldError errors={field.state.meta.errors} />
-                                    )}
-                                </Field>
+                              <Field>
+                                <ToggleGroupItem
+                                  value={tag}
+                                  aria-label="Toggle star"
+                                  onClick={() => field.state.value.includes(tag) ? field.removeValue(index) : field.pushValue(tag)}
+                                  className="data-[state=on]:bg-transparent data-[state=on]:*:[svg]:fill-yellow-500 data-[state=on]:*:[svg]:stroke-yellow-500"
+                                >
+                                  <Tag />
+                                    {tag}
+                                </ToggleGroupItem>
+                              </Field>
                             );
-                        }}
-                    ></form.Field>
+                          }}
+                        ></form.Field>
+                      ))}
+                    </ToggleGroup>
+                  </FieldGroup>
                 </div>
               </div>
               <DialogFooter>
@@ -176,7 +209,7 @@ export function DataTableToolbar<Data>({ table }: DataTableToolbarProps<Data>) {
                   <Button variant="outline">Cancel</Button>
                 </DialogClose>
                 <Button type="submit" form="project-form">
-                    {mutation.isPending? <Spinner /> : "Save changes"}
+                  {mutation.isPending ? <Spinner /> : 'Save changes'}
                 </Button>
               </DialogFooter>
             </form>
