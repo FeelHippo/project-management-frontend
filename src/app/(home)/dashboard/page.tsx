@@ -129,6 +129,7 @@ export default function Dashboard() {
           <div className="flex flex-row w-full items-start justify-between">
             <CardTitle>{name}</CardTitle>
             <ProjectDialog
+              key={data.uid}
               callback={callback}
               open={open}
               setOpen={setOpen}
