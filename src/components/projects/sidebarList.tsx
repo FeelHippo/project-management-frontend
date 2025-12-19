@@ -47,8 +47,6 @@ export default function SidebarList() {
     // https://tanstack.com/query/v4/docs/framework/react/guides/prefetching#manually-priming-a-query
     queryClient.setQueryData(['detailUid'], mostRecentProject.uid);
   }
-
-  if (!data) return null;
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
@@ -56,6 +54,8 @@ export default function SidebarList() {
     [],
   );
   const [sorting, setSorting] = React.useState<SortingState>([]);
+
+  if (!data) return null;
 
   const table = useReactTable({
     data,

@@ -43,15 +43,17 @@ export const postProject = async (project: Partial<Project>): Promise<void> => {
   });
 };
 
-export const updateProject = async (changes: { property: string; value: string; }[]): Promise<void> => {
-    await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/projects`, {
-        method: 'PATCH',
-        headers: {
-            'Content-Type': 'application/json',
-            'x-api-key': process.env.NEXT_PUBLIC_API_KEY as string,
-        },
-        body: JSON.stringify({ changes }),
-    });
+export const updateProject = async (
+  changes: { property: string; value: string }[],
+): Promise<void> => {
+  await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/projects`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': process.env.NEXT_PUBLIC_API_KEY as string,
+    },
+    body: JSON.stringify({ changes }),
+  });
 };
 
 export const deleteProject = async (uids: string[]): Promise<void> => {
