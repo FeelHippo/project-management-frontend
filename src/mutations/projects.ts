@@ -69,13 +69,30 @@ export const mutationUpdate = () =>
           }
       )[];
     }) => updateProject(uid, changes),
-    onMutate: async (newProject, context) => {
+    onMutate: async (updatedProject, context) => {
       await context.client.cancelQueries({ queryKey: ['projects'] });
       const data = context.client.getQueryData(['projects']);
-      context.client.setQueryData(['projects'], (old: Project[]) => [
-        ...old,
-        newProject,
-      ]);
+      context.client.setQueryData(['projects'], (old: Project[]) => {
+        return old.map((oldProject) =>
+          oldProject.uid == updatedProject.uid
+            ? {
+                ...oldProject,
+                name:
+                  updatedProject.changes?.find(
+                    (change) => change.property == 'name',
+                  )?.value ?? oldProject.name,
+                description:
+                  updatedProject.changes?.find(
+                    (change) => change.property == 'description',
+                  )?.value ?? oldProject.description,
+                tags:
+                  updatedProject.changes?.find(
+                    (change) => change.property == 'tags',
+                  )?.value ?? oldProject.tags,
+              }
+            : oldProject,
+        );
+      });
       return { data };
     },
     onError: (err, newTodo, onMutateResult, context) => {

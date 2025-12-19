@@ -23,6 +23,8 @@ import { Project } from '@/lib/interfaces/project';
 import React from 'react';
 import { mutationPost, mutationDelete } from '@/mutations/projects';
 import { ProjectDialog } from '@/components/projects/dialog';
+import { useForm } from '@tanstack/react-form';
+import { projectFormSchema } from '@/lib/validation/form';
 
 interface DataTableToolbarProps<Data> {
   table: Table<Data>;
@@ -36,28 +38,8 @@ export function DataTableToolbar<Data>({ table }: DataTableToolbarProps<Data>) {
   const [openDelete, setOpenDelete] = React.useState(false);
   const isFiltered = table.getState().columnFilters.length > 0;
 
-  const onSubmit = async ({
-    value,
-  }: {
-    value: {
-      name: string;
-      description: string;
-      tags: string[];
-    };
-  }) => {
-    try {
-      const { name, description, tags } = value;
-      postProject.mutate({ name, description, tags });
-      setOpen(false);
-      toast.message('New Project created.');
-    } catch (err: any) {
-      if (err.isSuperTokensGeneralError === true) {
-        toast.error(err.message);
-      } else {
-        toast.error('Oops! Something went wrong.');
-      }
-    }
-  };
+  const callback = (name: string, description: string, tags: string[]) =>
+    postProject.mutate({ name, description, tags });
 
   return (
     <div className="flex items-center justify-between">
@@ -128,7 +110,7 @@ export function DataTableToolbar<Data>({ table }: DataTableToolbarProps<Data>) {
         )}
         <DataTableViewOptions table={table} />
         <ProjectDialog
-          onSubmit={onSubmit}
+          callback={callback}
           open={open}
           setOpen={setOpen}
           title="New Project"

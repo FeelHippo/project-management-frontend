@@ -18,10 +18,10 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { Tags } from '@/lib/interfaces/project';
 import { Spinner } from '@/components/ui/spinner';
 import React, { JSX } from 'react';
-import { projectFormSchema } from '@/lib/validation/form';
+import { toast } from 'sonner';
 
-export function ProjectDialog<Data>({
-  onSubmit,
+export function ProjectDialog({
+  callback,
   open,
   setOpen,
   title,
@@ -32,7 +32,7 @@ export function ProjectDialog<Data>({
   defaultDescription,
   defaultTags,
 }: {
-  onSubmit: ({ value }: { value: any }) => Promise<void>;
+  callback: (name: string, description: string, tags: string[]) => void;
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   title: string;
@@ -44,15 +44,34 @@ export function ProjectDialog<Data>({
   defaultTags?: string[];
 }) {
   const form = useForm({
+    listeners: {
+      onBlur: ({ formApi }) => {
+        formApi.reset({ name: '', description: '', tags: [] });
+      },
+    },
     defaultValues: {
       name: defaultName ?? '',
       description: defaultDescription ?? '',
       tags: defaultTags ?? ([] as unknown[]),
     },
-    validators: {
-      onSubmit: projectFormSchema,
+    onSubmit: async ({ value, formApi }) => {
+      try {
+        const { name, description, tags } = value as {
+          name: string;
+          description: string;
+          tags: string[];
+        };
+        callback(name, description, tags);
+        formApi.reset({ name: '', description: '', tags: [] });
+        toast.message('New Project created.');
+      } catch (err: any) {
+        if (err.isSuperTokensGeneralError === true) {
+          toast.error(err.message);
+        } else {
+          toast.error('Oops! Something went wrong.');
+        }
+      }
     },
-    onSubmit,
   });
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -143,13 +162,17 @@ export function ProjectDialog<Data>({
                           <Field className="w-fit">
                             <ToggleGroupItem
                               value={tag}
-                              aria-label="Toggle star"
+                              aria-label={`Toggle ${tag}`}
                               onClick={() =>
                                 field.state.value.includes(tag)
                                   ? field.removeValue(index)
                                   : field.pushValue(tag)
                               }
-                              className="data-[state=on]:bg-transparent data-[state=on]:*:[svg]:fill-yellow-500 data-[state=on]:*:[svg]:stroke-yellow-500"
+                              className={
+                                field.state.value.includes(tag)
+                                  ? 'data-[state=on]:bg-transparent data-[state=on]:*:[svg]:fill-yellow-500 data-[state=on]:*:[svg]:stroke-yellow-500'
+                                  : ''
+                              }
                             >
                               <Tag />
                               {tag}

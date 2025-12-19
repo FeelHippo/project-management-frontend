@@ -17,7 +17,6 @@ import {
 import { Field } from '@/components/ui/field';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { ProjectDialog } from '@/components/projects/dialog';
-import { toast } from 'sonner';
 import { mutationUpdate } from '@/mutations/projects';
 
 export default function Dashboard() {
@@ -81,45 +80,26 @@ export default function Dashboard() {
         }) as TimelineElement,
     );
 
-  const onSubmit = async ({
-    value,
-  }: {
-    value: {
-      name: string;
-      description: string;
-      tags: string[];
+  const callback = (name: string, description: string, tags: string[]) => {
+    const nameChange = name != data.name && {
+      property: 'name',
+      value: name,
     };
-  }) => {
-    try {
-      const { name, description, tags } = value;
-      const nameChange = name != data.name && {
-        property: 'name',
-        value: name,
-      };
-      const descriptionChange = description != data.description && {
-        property: 'description',
-        value: description,
-      };
-      const tagsChange = (tags.some((tag) => !data.tags.includes(tag)) ||
-        data.tags.some((tag) => !tags.includes(tag))) && {
-        property: 'tags',
-        value: tags,
-      };
-      updateProject.mutate({
-        uid: data.uid,
-        changes: [nameChange, descriptionChange, tagsChange].filter(
-          (change) => !!change,
-        ),
-      });
-      setOpen(false);
-      toast.message('New Project created.');
-    } catch (err: any) {
-      if (err.isSuperTokensGeneralError === true) {
-        toast.error(err.message);
-      } else {
-        toast.error('Oops! Something went wrong.');
-      }
-    }
+    const descriptionChange = description != data.description && {
+      property: 'description',
+      value: description,
+    };
+    const tagsChange = (tags.some((tag) => !data.tags.includes(tag)) ||
+      data.tags.some((tag) => !tags.includes(tag))) && {
+      property: 'tags',
+      value: tags,
+    };
+    updateProject.mutate({
+      uid: data.uid,
+      changes: [nameChange, descriptionChange, tagsChange].filter(
+        (change) => !!change,
+      ),
+    });
   };
 
   return (
@@ -145,7 +125,7 @@ export default function Dashboard() {
           <div className="flex flex-row w-full items-start justify-between">
             <CardTitle>{name}</CardTitle>
             <ProjectDialog
-              onSubmit={onSubmit}
+              callback={callback}
               open={open}
               setOpen={setOpen}
               title="Modify Project"
