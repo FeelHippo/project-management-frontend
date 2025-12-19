@@ -1,8 +1,9 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useRouter, redirect } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import Session from 'supertokens-web-js/recipe/session';
+import { ClientRedirect } from '@/components/clientRedirect';
 
 export const TryRefreshComponent = () => {
   const router = useRouter();
@@ -11,17 +12,17 @@ export const TryRefreshComponent = () => {
     void Session.attemptRefreshingSession()
       .then((hasSession) => {
         if (hasSession) {
-          redirect('/dashboard');
+          return <ClientRedirect path="/dashboard" />;
         } else {
           /**
            * This means that the session is expired and cannot be refreshed.
            * In this example we redirect the user back to the login page.
            */
-          redirect('/login');
+          return <ClientRedirect path="/login" />;
         }
       })
       .catch(() => {
-        redirect('/registration');
+        return <ClientRedirect path="/registration" />;
       });
   }, [router]);
 
