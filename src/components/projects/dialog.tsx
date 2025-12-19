@@ -19,6 +19,7 @@ import { Tags } from '@/lib/interfaces/project';
 import { Spinner } from '@/components/ui/spinner';
 import React, { JSX } from 'react';
 import { toast } from 'sonner';
+import { projectFormSchema } from '@/lib/validation/form';
 
 export function ProjectDialog({
   callback,
@@ -32,7 +33,11 @@ export function ProjectDialog({
   defaultDescription,
   defaultTags,
 }: {
-  callback: (name: string, description: string, tags: string[]) => void;
+  callback: (
+    name: string,
+    description: string,
+    tags: string[],
+  ) => Promise<void>;
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   title: string;
@@ -45,7 +50,7 @@ export function ProjectDialog({
 }) {
   const form = useForm({
     listeners: {
-      onBlur: ({ formApi }) => {
+      onMount: ({ formApi }) => {
         formApi.reset({ name: '', description: '', tags: [] });
       },
     },
@@ -54,6 +59,9 @@ export function ProjectDialog({
       description: defaultDescription ?? '',
       tags: defaultTags ?? ([] as unknown[]),
     },
+    validators: {
+      onSubmit: projectFormSchema,
+    },
     onSubmit: async ({ value, formApi }) => {
       try {
         const { name, description, tags } = value as {
@@ -61,8 +69,9 @@ export function ProjectDialog({
           description: string;
           tags: string[];
         };
-        callback(name, description, tags);
+        await callback(name, description, tags);
         formApi.reset({ name: '', description: '', tags: [] });
+        setOpen(false);
         toast.message('New Project created.');
       } catch (err: any) {
         if (err.isSuperTokensGeneralError === true) {
@@ -74,7 +83,13 @@ export function ProjectDialog({
     },
   });
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog
+      open={open}
+      onOpenChange={(isOpen) => {
+        setOpen(isOpen);
+        !isOpen && form.reset({ name: '', description: '', tags: [] });
+      }}
+    >
       <DialogTrigger asChild>
         <Button size="sm">{triggerIcon}</Button>
       </DialogTrigger>
@@ -168,11 +183,7 @@ export function ProjectDialog({
                                   ? field.removeValue(index)
                                   : field.pushValue(tag)
                               }
-                              className={
-                                field.state.value.includes(tag)
-                                  ? 'data-[state=on]:bg-transparent data-[state=on]:*:[svg]:fill-yellow-500 data-[state=on]:*:[svg]:stroke-yellow-500'
-                                  : ''
-                              }
+                              className="data-[state=on]:bg-transparent data-[state=on]:*:[svg]:fill-yellow-500 data-[state=on]:*:[svg]:stroke-yellow-500'"
                             >
                               <Tag />
                               {tag}

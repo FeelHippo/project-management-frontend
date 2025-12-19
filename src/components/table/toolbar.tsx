@@ -17,14 +17,11 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { toast } from 'sonner';
 import { Spinner } from '@/components/ui/spinner';
 import { Project } from '@/lib/interfaces/project';
 import React from 'react';
 import { mutationPost, mutationDelete } from '@/mutations/projects';
 import { ProjectDialog } from '@/components/projects/dialog';
-import { useForm } from '@tanstack/react-form';
-import { projectFormSchema } from '@/lib/validation/form';
 
 interface DataTableToolbarProps<Data> {
   table: Table<Data>;
@@ -38,7 +35,7 @@ export function DataTableToolbar<Data>({ table }: DataTableToolbarProps<Data>) {
   const [openDelete, setOpenDelete] = React.useState(false);
   const isFiltered = table.getState().columnFilters.length > 0;
 
-  const callback = (name: string, description: string, tags: string[]) =>
+  const callback = async (name: string, description: string, tags: string[]) =>
     postProject.mutate({ name, description, tags });
 
   return (

@@ -80,7 +80,11 @@ export default function Dashboard() {
         }) as TimelineElement,
     );
 
-  const callback = (name: string, description: string, tags: string[]) => {
+  const callback = async (
+    name: string,
+    description: string,
+    tags: string[],
+  ) => {
     const nameChange = name != data.name && {
       property: 'name',
       value: name,
@@ -94,7 +98,7 @@ export default function Dashboard() {
       property: 'tags',
       value: tags,
     };
-    updateProject.mutate({
+    return updateProject.mutate({
       uid: data.uid,
       changes: [nameChange, descriptionChange, tagsChange].filter(
         (change) => !!change,
