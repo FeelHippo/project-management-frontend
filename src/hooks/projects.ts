@@ -44,9 +44,19 @@ export const postProject = async (project: Partial<Project>): Promise<void> => {
 };
 
 export const updateProject = async (
-  changes: { property: string; value: string }[],
+  uid: string,
+  changes: (
+    | {
+        property: string;
+        value: string;
+      }
+    | {
+        property: string;
+        value: string[];
+      }
+  )[],
 ): Promise<void> => {
-  await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/projects`, {
+  await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/projects/${uid}`, {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',

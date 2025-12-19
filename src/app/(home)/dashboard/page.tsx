@@ -5,8 +5,7 @@ import React, { useEffect } from 'react';
 import { queryOptions, useQuery, useQueryClient } from '@tanstack/react-query';
 import { TimelineLayout } from '@/components/ui/timeline-layout';
 import { getProject } from '@/hooks/projects';
-import { ViewTransition } from 'react';
-import { CalendarIcon, Tag } from 'lucide-react';
+import { CalendarIcon, Edit, Tag } from 'lucide-react';
 import { TimelineElement } from '@/lib/interfaces/timeline';
 import {
   Card,
@@ -17,22 +16,25 @@ import {
 } from '@/components/ui/card';
 import { Field } from '@/components/ui/field';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+import { ProjectDialog } from '@/components/projects/dialog';
+import { toast } from 'sonner';
+import { mutationUpdate } from '@/mutations/projects';
 
 export default function Dashboard() {
+  const updateProject = mutationUpdate();
+  const [open, setOpen] = React.useState(false);
   // TODO(Filippo): avoid flash navigation to dashboard if user has no session
   // protect this route frm direct navigation. Warning: might be causing https://github.com/vercel/next.js/issues/78396
-  // useEffect(() => {
-  //   (async () => {
-  //     if (!(await Session.doesSessionExist())) {
-  //       window.location.href = '/login';
-  //     }
-  //   })();
-  // }, []);
+  useEffect(() => {
+    (async () => {
+      if (!(await Session.doesSessionExist())) {
+        window.location.href = '/login';
+      }
+    })();
+  }, []);
 
   const queryClient = useQueryClient();
   const projectUid = queryClient.getQueryData(['detailUid']);
-
-  if (!projectUid) return null;
 
   const { data } = useQuery(
     queryOptions({
@@ -79,52 +81,107 @@ export default function Dashboard() {
         }) as TimelineElement,
     );
 
+  const onSubmit = async ({
+    value,
+  }: {
+    value: {
+      name: string;
+      description: string;
+      tags: string[];
+    };
+  }) => {
+    try {
+      const { name, description, tags } = value;
+      const nameChange = name != data.name && {
+        property: 'name',
+        value: name,
+      };
+      const descriptionChange = description != data.description && {
+        property: 'description',
+        value: description,
+      };
+      const tagsChange = (tags.some((tag) => !data.tags.includes(tag)) ||
+        data.tags.some((tag) => !tags.includes(tag))) && {
+        property: 'tags',
+        value: tags,
+      };
+      updateProject.mutate({
+        uid: data.uid,
+        changes: [nameChange, descriptionChange, tagsChange].filter(
+          (change) => !!change,
+        ),
+      });
+      setOpen(false);
+      toast.message('New Project created.');
+    } catch (err: any) {
+      if (err.isSuperTokensGeneralError === true) {
+        toast.error(err.message);
+      } else {
+        toast.error('Oops! Something went wrong.');
+      }
+    }
+  };
+
   return (
     <div className="flex flex-row h-dvh w-full gap-12 px-12 py-3">
-        <Card className="h-fit w-2/3">
-            <CardHeader>
-                <CardTitle>Project Timeline</CardTitle>
-                <CardDescription>
-                    Here you can see the most recent events:
-                </CardDescription>
-            </CardHeader>
-            <CardContent>
-                <TimelineLayout
-                    items={timelineData}
-                    size="lg"
-                    iconColor="primary"
-                    customIcon={<CalendarIcon />}
-                />
-            </CardContent>
-        </Card>
-        <Card className="h-60 w-1/3">
-            <CardHeader>
-                <CardTitle>{name}</CardTitle>
-                <CardDescription>{description}</CardDescription>
-            </CardHeader>
-            <CardContent>
-                <ToggleGroup
-                    type="multiple"
-                    variant="outline"
-                    spacing={2}
-                    size="sm"
-                    className="flex-wrap"
+      <Card className="h-fit w-2/3">
+        <CardHeader>
+          <CardTitle>Project Timeline</CardTitle>
+          <CardDescription>
+            Here you can see the most recent events:
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <TimelineLayout
+            items={timelineData}
+            size="lg"
+            iconColor="primary"
+            customIcon={<CalendarIcon />}
+          />
+        </CardContent>
+      </Card>
+      <Card className="h-60 w-1/3">
+        <CardHeader>
+          <div className="flex flex-row w-full items-start justify-between">
+            <CardTitle>{name}</CardTitle>
+            <ProjectDialog
+              onSubmit={onSubmit}
+              open={open}
+              setOpen={setOpen}
+              title="Modify Project"
+              description="The below details can be modified:"
+              isPending={updateProject.isPending}
+              triggerIcon={<Edit />}
+              defaultName={name}
+              defaultDescription={description}
+              defaultTags={tags}
+            />
+          </div>
+          <CardDescription>{description}</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <ToggleGroup
+            type="multiple"
+            variant="outline"
+            spacing={2}
+            size="sm"
+            className="flex-wrap"
+          >
+            {tags.map((tag: string, index) => (
+              <Field key={index} className="w-fit">
+                <ToggleGroupItem
+                  value={tag}
+                  aria-label="Toggle star"
+                  className="data-[state=on]:bg-transparent data-[state=on]:*:[svg]:fill-yellow-500 data-[state=on]:*:[svg]:stroke-yellow-500"
                 >
-                    {tags.map((tag: string, index) => (
-                        <Field key={index} className="w-fit">
-                            <ToggleGroupItem
-                                value={tag}
-                                aria-label="Toggle star"
-                                className="data-[state=on]:bg-transparent data-[state=on]:*:[svg]:fill-yellow-500 data-[state=on]:*:[svg]:stroke-yellow-500"
-                            >
-                                <Tag />
-                                {tag}
-                            </ToggleGroupItem>
-                        </Field>
-                    ))}
-                </ToggleGroup>
-            </CardContent>
-        </Card>
+                  <Tag />
+                  {tag}
+                </ToggleGroupItem>
+              </Field>
+            ))}
+          </ToggleGroup>
+        </CardContent>
+      </Card>
     </div>
   );
 }

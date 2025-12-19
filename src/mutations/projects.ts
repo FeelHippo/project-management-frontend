@@ -1,6 +1,11 @@
 // https://tanstack.com/query/v5/docs/framework/react/guides/optimistic-updates#updating-a-list-of-todos-when-adding-a-new-todo
 import { useMutation } from '@tanstack/react-query';
-import { deleteProject, getProject, postProject } from '@/hooks/projects';
+import {
+  deleteProject,
+  getProject,
+  postProject,
+  updateProject,
+} from '@/hooks/projects';
 import { Project } from '@/lib/interfaces/project';
 
 export const mutationPost = () =>
@@ -45,4 +50,37 @@ export const mutationDetails = () =>
       context.client
         .invalidateQueries({ queryKey: ['project'] })
         .then(() => context.client.setQueryData(['project'], data)),
+  });
+export const mutationUpdate = () =>
+  useMutation({
+    mutationFn: ({
+      uid,
+      changes,
+    }: {
+      uid: string;
+      changes: (
+        | {
+            property: string;
+            value: string;
+          }
+        | {
+            property: string;
+            value: string[];
+          }
+      )[];
+    }) => updateProject(uid, changes),
+    onMutate: async (newProject, context) => {
+      await context.client.cancelQueries({ queryKey: ['projects'] });
+      const data = context.client.getQueryData(['projects']);
+      context.client.setQueryData(['projects'], (old: Project[]) => [
+        ...old,
+        newProject,
+      ]);
+      return { data };
+    },
+    onError: (err, newTodo, onMutateResult, context) => {
+      context.client.setQueryData(['projects'], onMutateResult?.data ?? []);
+    },
+    onSettled: (data, error, variables, onMutateResult, context) =>
+      context.client.invalidateQueries({ queryKey: ['projects'] }),
   });

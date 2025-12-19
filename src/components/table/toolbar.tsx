@@ -1,7 +1,7 @@
 'use client';
 
 import { type Table } from '@tanstack/react-table';
-import { Plus, Tag, X, Trash2 } from 'lucide-react';
+import { Plus, X, Trash2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { DataTableFacetedFilter } from '@/components/table/filter';
 import { statuses } from '@/components/table/data/status';
@@ -17,16 +17,12 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { Label } from '@/components/ui/label';
-import { useForm } from '@tanstack/react-form';
-import { projectFormSchema } from '@/lib/validation/form';
 import { toast } from 'sonner';
 import { Spinner } from '@/components/ui/spinner';
-import { Field, FieldError, FieldGroup } from '@/components/ui/field';
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
-import { Project, Tags } from '@/lib/interfaces/project';
+import { Project } from '@/lib/interfaces/project';
 import React from 'react';
 import { mutationPost, mutationDelete } from '@/mutations/projects';
+import { ProjectDialog } from '@/components/projects/dialog';
 
 interface DataTableToolbarProps<Data> {
   table: Table<Data>;
@@ -40,34 +36,28 @@ export function DataTableToolbar<Data>({ table }: DataTableToolbarProps<Data>) {
   const [openDelete, setOpenDelete] = React.useState(false);
   const isFiltered = table.getState().columnFilters.length > 0;
 
-  const form = useForm({
-    defaultValues: {
-      name: '',
-      description: '',
-      tags: [] as unknown[],
-    },
-    validators: {
-      onSubmit: projectFormSchema,
-    },
-    onSubmit: async ({ value }) => {
-      try {
-        const { name, description, tags } = value as {
-          name: string;
-          description: string;
-          tags: string[];
-        };
-        postProject.mutate({ name, description, tags });
-        setOpen(false);
-        toast.message('New Project created.');
-      } catch (err: any) {
-        if (err.isSuperTokensGeneralError === true) {
-          toast.error(err.message);
-        } else {
-          toast.error('Oops! Something went wrong.');
-        }
+  const onSubmit = async ({
+    value,
+  }: {
+    value: {
+      name: string;
+      description: string;
+      tags: string[];
+    };
+  }) => {
+    try {
+      const { name, description, tags } = value;
+      postProject.mutate({ name, description, tags });
+      setOpen(false);
+      toast.message('New Project created.');
+    } catch (err: any) {
+      if (err.isSuperTokensGeneralError === true) {
+        toast.error(err.message);
+      } else {
+        toast.error('Oops! Something went wrong.');
       }
-    },
-  });
+    }
+  };
 
   return (
     <div className="flex items-center justify-between">
@@ -137,129 +127,15 @@ export function DataTableToolbar<Data>({ table }: DataTableToolbarProps<Data>) {
           </Dialog>
         )}
         <DataTableViewOptions table={table} />
-        <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger asChild>
-            <Button size="sm">
-              <Plus />
-            </Button>
-          </DialogTrigger>
-
-          <DialogContent className="sm:max-w-[425px]">
-            <form
-              id="project-form"
-              onSubmit={(e) => {
-                e.preventDefault();
-                form.handleSubmit().then();
-              }}
-            >
-              <DialogHeader className="h-16">
-                <DialogTitle>New Project</DialogTitle>
-                <DialogDescription>
-                  Please provide the following project details:
-                </DialogDescription>
-              </DialogHeader>
-              <div className="grid gap-4 my-8">
-                <div className="grid gap-4">
-                  <Label htmlFor="name">Name</Label>
-                  <form.Field
-                    name="name"
-                    children={(field) => {
-                      const isInvalid =
-                        field.state.meta.isTouched && !field.state.meta.isValid;
-                      return (
-                        <Field data-invalid={isInvalid}>
-                          <Input
-                            id="name"
-                            name="name"
-                            value={field.state.value as string}
-                            onBlur={field.handleBlur}
-                            onChange={(e) => field.handleChange(e.target.value)}
-                            autoComplete="off"
-                            aria-invalid={isInvalid}
-                          />
-                          {isInvalid && (
-                            <FieldError errors={field.state.meta.errors} />
-                          )}
-                        </Field>
-                      );
-                    }}
-                  ></form.Field>
-                </div>
-                <div className="grid gap-4">
-                  <Label htmlFor="description">Description</Label>
-                  <form.Field
-                    name="description"
-                    children={(field) => {
-                      const isInvalid =
-                        field.state.meta.isTouched && !field.state.meta.isValid;
-                      return (
-                        <Field data-invalid={isInvalid}>
-                          <Input
-                            id="description"
-                            name="description"
-                            value={field.state.value as string}
-                            onBlur={field.handleBlur}
-                            onChange={(e) => field.handleChange(e.target.value)}
-                            autoComplete="off"
-                            aria-invalid={isInvalid}
-                          />
-                          {isInvalid && (
-                            <FieldError errors={field.state.meta.errors} />
-                          )}
-                        </Field>
-                      );
-                    }}
-                  ></form.Field>
-                </div>
-                <div className="grid gap-4">
-                  <FieldGroup>
-                    <ToggleGroup
-                      type="multiple"
-                      variant="outline"
-                      spacing={2}
-                      size="sm"
-                      className="flex-wrap"
-                    >
-                      {Object.values(Tags).map((tag: string, index) => (
-                        <form.Field
-                          key={index}
-                          name="tags"
-                          children={(field) => {
-                            return (
-                              <Field className="w-fit">
-                                <ToggleGroupItem
-                                  value={tag}
-                                  aria-label="Toggle star"
-                                  onClick={() =>
-                                    field.state.value.includes(tag)
-                                      ? field.removeValue(index)
-                                      : field.pushValue(tag)
-                                  }
-                                  className="data-[state=on]:bg-transparent data-[state=on]:*:[svg]:fill-yellow-500 data-[state=on]:*:[svg]:stroke-yellow-500"
-                                >
-                                  <Tag />
-                                  {tag}
-                                </ToggleGroupItem>
-                              </Field>
-                            );
-                          }}
-                        ></form.Field>
-                      ))}
-                    </ToggleGroup>
-                  </FieldGroup>
-                </div>
-              </div>
-              <DialogFooter>
-                <DialogClose asChild>
-                  <Button variant="outline">Cancel</Button>
-                </DialogClose>
-                <Button type="submit" form="project-form">
-                  {postProject.isPending ? <Spinner /> : 'Save changes'}
-                </Button>
-              </DialogFooter>
-            </form>
-          </DialogContent>
-        </Dialog>
+        <ProjectDialog
+          onSubmit={onSubmit}
+          open={open}
+          setOpen={setOpen}
+          title="New Project"
+          description="Please provide the following project details:"
+          isPending={postProject.isPending}
+          triggerIcon={<Plus />}
+        />
       </div>
     </div>
   );
