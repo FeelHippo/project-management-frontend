@@ -18,15 +18,17 @@ export const mutationPost = () =>
         ...old,
         newProject,
       ]);
-      return { data } as { data: Project[]; };
+      return { data } as { data: Project[] };
     },
     onError: (err, newTodo, onMutateResult, context) => {
       context.client.setQueryData(['projects'], onMutateResult?.data ?? []);
     },
     onSettled: (data, error, variables, onMutateResult, context) =>
-      context.client.invalidateQueries({ queryKey: ['projects'] }).then((_) =>
+      context.client
+        .invalidateQueries({ queryKey: ['projects'] })
+        .then((_) =>
           context.client.setQueryData(['project'], onMutateResult?.data[0]),
-      ),
+        ),
   });
 export const mutationDelete = () =>
   useMutation({
@@ -48,10 +50,12 @@ export const mutationDelete = () =>
 export const mutationDetails = () =>
   useMutation({
     mutationFn: (uid: string) => getProject(uid),
-    onSettled: (data, error, variables, onMutateResult, context) =>
-      context.client
-        .invalidateQueries({ queryKey: ['project'] })
-        .then(() => context.client.setQueryData(['project'], data)),
+    onSettled: async (data, error, variables, onMutateResult, context) => {
+        await context.client
+            .invalidateQueries({ queryKey: ['project'] });
+        context.client.setQueryData(['project'], data);
+        context.client.setQueryData(['projectUid'], data!.uid);
+    },
   });
 export const mutationUpdate = () =>
   useMutation({

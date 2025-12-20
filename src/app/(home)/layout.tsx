@@ -12,11 +12,9 @@ export default async function HomeLayout({
   const defaultOpen = cookieStore.get('sidebar_state')?.value === 'true';
   return (
     <QueryProvider>
-        <SidebarProvider defaultOpen={defaultOpen}>
-          <main className="w-full h-full">
-            {children}
-          </main>
-        </SidebarProvider>
+      <SidebarProvider defaultOpen={defaultOpen}>
+        <main className="w-full h-full">{children}</main>
+      </SidebarProvider>
     </QueryProvider>
   );
 }

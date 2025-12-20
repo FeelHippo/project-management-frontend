@@ -31,23 +31,6 @@ import { Project } from '@/lib/interfaces/project';
 import useKeyboardMode from '@/hooks/useKeyboard';
 
 export default function SidebarList() {
-  const queryClient = useQueryClient();
-  // Recommended query creation
-  // https://github.com/TanStack/query/discussions/846#discussioncomment-13454614
-  const { data } = useQuery(
-    queryOptions({
-      queryKey: ['projects'],
-      queryFn: () => getProjects(),
-      initialData: [] as Project[],
-    }),
-  );
-
-  // set initial project to the most recent. This is arbitrary and can/should be improved
-  const mostRecentProject = data.sort((a, b) =>
-    a.createdAt < b.createdAt ? 1 : -1,
-  )[0];
-  // https://tanstack.com/query/v4/docs/framework/react/guides/prefetching#manually-priming-a-query
-  queryClient.setQueryData(['detailUid'], mostRecentProject?.uid);
 
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] =
@@ -56,6 +39,15 @@ export default function SidebarList() {
     [],
   );
   const [sorting, setSorting] = React.useState<SortingState>([]);
+  // Recommended query creation
+  // https://github.com/TanStack/query/discussions/846#discussioncomment-13454614
+  const { data } = useQuery(
+    queryOptions({
+      queryKey: ['projects'],
+      queryFn: getProjects,
+      initialData: [] as Project[],
+    }),
+  );
 
   const table = useReactTable({
     data,
