@@ -1,8 +1,10 @@
 import { RowModel } from '@tanstack/react-table';
 import { useEffect, useRef, useState } from 'react';
 import { Project } from '@/lib/interfaces/project';
+import {mutationDetails} from "@/mutations/projects";
 
 export default function useKeyboardMode(rowModel: RowModel<Project>) {
+    const showDetailsOfProject = mutationDetails();
   const [keyboardEnabled, setKeyboardEnabled] = useState(true);
   const rowRefs = useRef<(HTMLTableRowElement | null)[]>([]);
 
@@ -22,6 +24,10 @@ export default function useKeyboardMode(rowModel: RowModel<Project>) {
       if (key === 'ArrowUp') nextIdx = Math.max(prevIdx - 1, 0);
       if (key === ' ') {
         rowModel.rows[keyboardSelectionIdxRef.current].toggleSelected();
+      }
+      if (key === 'Enter') {
+          const uid = rowModel.rows[keyboardSelectionIdxRef.current].original.uid;
+          showDetailsOfProject.mutate(uid);
       }
 
       if (nextIdx !== prevIdx) {
