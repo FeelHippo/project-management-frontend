@@ -10,7 +10,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Tag } from 'lucide-react';
-import { useForm } from '@tanstack/react-form';
+import { useForm, useStore } from '@tanstack/react-form';
 import { Input } from '@/components/ui/input';
 import { Field, FieldError, FieldGroup } from '@/components/ui/field';
 import { Label } from '@/components/ui/label';
@@ -82,6 +82,7 @@ export function ProjectDialog({
       }
     },
   });
+  const storedTags = useStore(form.store, (state) => state.values.tags);
   return (
     <Dialog
       open={open}
@@ -161,39 +162,53 @@ export function ProjectDialog({
             </div>
             <div className="grid gap-4">
               <FieldGroup>
-                <ToggleGroup
-                  type="multiple"
-                  variant="outline"
-                  spacing={2}
-                  size="sm"
-                  className="flex-wrap"
-                >
-                  {Object.values(Tags).map((tag: string, index) => (
-                    <form.Field
-                      key={index}
-                      name="tags"
-                      children={(field) => {
-                        return (
-                          <Field className="w-fit">
-                            <ToggleGroupItem
-                              value={tag}
-                              aria-label={`Toggle ${tag}`}
-                              onClick={() =>
-                                field.state.value.includes(tag)
-                                  ? field.removeValue(index)
-                                  : field.pushValue(tag)
-                              }
-                              className="data-[state=on]:bg-transparent data-[state=on]:*:[svg]:fill-yellow-500 data-[state=on]:*:[svg]:stroke-yellow-500'"
-                            >
-                              <Tag />
-                              {tag}
-                            </ToggleGroupItem>
-                          </Field>
-                        );
-                      }}
-                    ></form.Field>
-                  ))}
-                </ToggleGroup>
+                <form.Subscribe
+                  children={(state) => (
+                    <ToggleGroup
+                      type="multiple"
+                      variant="outline"
+                      spacing={2}
+                      size="sm"
+                      className="flex-wrap"
+                      value={state.values.tags as string[]}
+                      // onValueChange={console.log}
+                    >
+                      {Object.values(Tags).map((tag: string, index) => (
+                        <form.Field
+                          key={index}
+                          name="tags"
+                          children={(field) => {
+                            return (
+                              <Field className="w-fit">
+                                <ToggleGroupItem
+                                  value={tag}
+                                  aria-label={`Toggle ${tag}`}
+                                  onClick={() =>
+                                    storedTags.includes(tag)
+                                      ? form.setFieldValue(
+                                          'tags',
+                                          form.state.values.tags.filter(
+                                            (t) => t !== tag,
+                                          ),
+                                        )
+                                      : form.setFieldValue('tags', [
+                                          ...form.state.values.tags,
+                                          tag,
+                                        ])
+                                  }
+                                  className="data-[state=on]:bg-transparent data-[state=on]:*:[svg]:fill-yellow-500 data-[state=on]:*:[svg]:stroke-yellow-500'"
+                                >
+                                  <Tag />
+                                  {tag}
+                                </ToggleGroupItem>
+                              </Field>
+                            );
+                          }}
+                        ></form.Field>
+                      ))}
+                    </ToggleGroup>
+                  )}
+                />
               </FieldGroup>
             </div>
           </div>
