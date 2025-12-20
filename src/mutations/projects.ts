@@ -54,7 +54,7 @@ export const mutationDetails = () =>
         await context.client
             .invalidateQueries({ queryKey: ['project'] });
         context.client.setQueryData(['project'], data);
-        context.client.setQueryData(['projectUid'], data!.uid);
+        context.client.setQueryData(['projectUid'], data?.uid);
     },
   });
 export const mutationUpdate = () =>
