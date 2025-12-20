@@ -1,35 +1,29 @@
-import {
-  CheckCircle,
-  Circle,
-  CircleOff,
-  HelpCircle,
-  Timer,
-} from 'lucide-react';
+import { Badge, BadgeCheck, BadgePercent, Ban, OctagonX } from 'lucide-react';
 
 export const statuses = [
   {
     value: 'NEW',
     label: 'New',
-    icon: HelpCircle,
+    icon: Badge,
   },
   {
     value: 'IN_PROGRESS',
     label: 'In Progress',
-    icon: Timer,
+    icon: BadgePercent,
   },
   {
     value: 'COMPLETED',
     label: 'Completed',
-    icon: Circle,
+    icon: BadgeCheck,
   },
   {
     value: 'ARCHIVED',
     label: 'Archived',
-    icon: CheckCircle,
+    icon: Ban,
   },
   {
     value: 'TERMINATED',
     label: 'Terminated',
-    icon: CircleOff,
+    icon: OctagonX,
   },
 ];

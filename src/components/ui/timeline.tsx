@@ -413,7 +413,7 @@ const TimelineIcon = ({
   };
 
   const colorClasses = {
-    primary: 'bg-primary text-primary-foreground',
+    primary: 'bg-blue-500 text-primary-foreground',
     secondary: 'bg-secondary text-secondary-foreground',
     muted: 'bg-muted text-muted-foreground',
     accent: 'bg-accent text-accent-foreground',

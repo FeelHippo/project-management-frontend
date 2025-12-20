@@ -135,7 +135,7 @@ export default function Dashboard() {
           />
         </CardContent>
       </Card>
-      <Card className="h-60 w-1/3">
+      <Card className="h-100 w-1/3">
         <CardHeader>
           <div className="flex flex-row w-full items-start justify-between">
             <CardTitle>{name}</CardTitle>
@@ -155,7 +155,7 @@ export default function Dashboard() {
           </div>
           <CardDescription>{description}</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="flex flex-col w-full h-full items-start justify-between">
           <ToggleGroup
             type="multiple"
             variant="outline"

@@ -18,13 +18,15 @@ export const mutationPost = () =>
         ...old,
         newProject,
       ]);
-      return { data };
+      return { data } as { data: Project[]; };
     },
     onError: (err, newTodo, onMutateResult, context) => {
       context.client.setQueryData(['projects'], onMutateResult?.data ?? []);
     },
     onSettled: (data, error, variables, onMutateResult, context) =>
-      context.client.invalidateQueries({ queryKey: ['projects'] }),
+      context.client.invalidateQueries({ queryKey: ['projects'] }).then((_) =>
+          context.client.setQueryData(['project'], onMutateResult?.data[0]),
+      ),
   });
 export const mutationDelete = () =>
   useMutation({
@@ -92,7 +94,6 @@ export const mutationUpdate = () =>
       const data = allProjects?.find(
         (project) => project.uid === updatedProject.uid,
       );
-      console.log('~~~', data);
       return { data };
     },
     onError: (err, newTodo, onMutateResult, context) => {
