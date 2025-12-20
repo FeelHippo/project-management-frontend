@@ -56,9 +56,13 @@ export default function Dashboard() {
     }),
   );
 
+
+  const projectUid = queryClient.getQueryData(['projectUid']);
+
   const { data } = useQuery({
       queryKey: ['project'],
-      queryFn: () => getProject(queryClient.getQueryData(['projectUid']) as string),
+      queryFn: () => getProject(projectUid as string),
+      enabled: !!projectUid,
   });
 
   if (!data) return null;
