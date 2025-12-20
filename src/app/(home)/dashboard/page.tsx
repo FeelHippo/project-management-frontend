@@ -22,8 +22,9 @@ import { mutationUpdate } from '@/mutations/projects';
 export default function Dashboard() {
   const updateProject = mutationUpdate();
   const [open, setOpen] = React.useState(false);
+
   // TODO(Filippo): avoid flash navigation to dashboard if user has no session
-  // protect this route frm direct navigation. Warning: might be causing https://github.com/vercel/next.js/issues/78396
+  // protect this route from direct navigation. Warning: might be causing https://github.com/vercel/next.js/issues/78396
   useEffect(() => {
     (async () => {
       if (!(await Session.doesSessionExist())) {

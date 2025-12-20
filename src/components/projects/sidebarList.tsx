@@ -27,6 +27,8 @@ import { columns } from '@/components/table/columns';
 import React from 'react';
 import { DataTableToolbar } from '@/components/table/toolbar';
 import { DataTablePagination } from '@/components/table/pagination';
+import { Project } from '@/lib/interfaces/project';
+import useKeyboardMode from '@/hooks/useKeyboard';
 
 export default function SidebarList() {
   const queryClient = useQueryClient();
@@ -36,17 +38,17 @@ export default function SidebarList() {
     queryOptions({
       queryKey: ['projects'],
       queryFn: () => getProjects(),
+      initialData: [] as Project[],
     }),
   );
 
-  if (data) {
-    // set initial project to the most recent. This is arbitrary and can/should be improved
-    const mostRecentProject = data.sort((a, b) =>
-      a.createdAt < b.createdAt ? 1 : -1,
-    )[0];
-    // https://tanstack.com/query/v4/docs/framework/react/guides/prefetching#manually-priming-a-query
-    queryClient.setQueryData(['detailUid'], mostRecentProject.uid);
-  }
+  // set initial project to the most recent. This is arbitrary and can/should be improved
+  const mostRecentProject = data.sort((a, b) =>
+    a.createdAt < b.createdAt ? 1 : -1,
+  )[0];
+  // https://tanstack.com/query/v4/docs/framework/react/guides/prefetching#manually-priming-a-query
+  queryClient.setQueryData(['detailUid'], mostRecentProject.uid);
+
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
@@ -54,8 +56,6 @@ export default function SidebarList() {
     [],
   );
   const [sorting, setSorting] = React.useState<SortingState>([]);
-
-  if (!data) return null;
 
   const table = useReactTable({
     data,
@@ -83,11 +83,9 @@ export default function SidebarList() {
     getFacetedRowModel: getFacetedRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
   });
+  const { rowRefs, setKeyboardEnabled, keyboardSelectionIdxRef } =
+    useKeyboardMode(table.getRowModel());
 
-  // TODO(Filippo): Plus icon => modal to create a project
-  // https://ui.shadcn.com/docs/components/table
-  // You can use the <Table /> component to build more complex data tables.
-  // Combine it with @tanstack/react-table to create tables with sorting, filtering and pagination.
   return (
     <div className="flex flex-col gap-4 h-full">
       <DataTableToolbar table={table} />
@@ -113,9 +111,12 @@ export default function SidebarList() {
           </TableHeader>
           <TableBody>
             {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
+              table.getRowModel().rows.map((row, index) => (
                 <TableRow
                   key={row.id}
+                  ref={(el) => {
+                    rowRefs.current[index] = el;
+                  }}
                   data-state={row.getIsSelected() && 'selected'}
                 >
                   {row.getVisibleCells().map((cell) => (
