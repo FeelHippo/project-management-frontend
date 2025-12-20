@@ -47,7 +47,7 @@ export default function SidebarList() {
     a.createdAt < b.createdAt ? 1 : -1,
   )[0];
   // https://tanstack.com/query/v4/docs/framework/react/guides/prefetching#manually-priming-a-query
-  queryClient.setQueryData(['detailUid'], mostRecentProject.uid);
+  queryClient.setQueryData(['detailUid'], mostRecentProject?.uid);
 
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] =

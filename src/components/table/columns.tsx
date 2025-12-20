@@ -7,7 +7,6 @@ import { Project } from '@/lib/interfaces/project';
 import { DataTableColumnHeader } from '@/components/table/columnHeader';
 import { statuses } from '@/components/table/data/status';
 import { ChevronRight } from 'lucide-react';
-import { useQueryClient } from '@tanstack/react-query';
 import { mutationDetails } from '@/mutations/projects';
 
 export const columns: ColumnDef<Project>[] = [
@@ -38,9 +37,12 @@ export const columns: ColumnDef<Project>[] = [
   {
     accessorKey: 'title',
     filterFn: (row, columnId, filterValue) => {
-      return `${row.original.name} ${row.original.description}`.includes(
-        filterValue,
-      );
+      if (filterValue === '/') {
+        return true;
+      }
+      return `${row.original.name} ${row.original.description}`
+        .toLowerCase()
+        .includes(filterValue.toLowerCase());
     },
     header: ({ column }) => (
       <DataTableColumnHeader

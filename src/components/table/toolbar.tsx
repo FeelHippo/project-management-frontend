@@ -42,6 +42,7 @@ export function DataTableToolbar<Data>({ table }: DataTableToolbarProps<Data>) {
     <div className="flex items-center justify-between">
       <div className="flex flex-1 items-center gap-2">
         <Input
+          id="formSearch"
           placeholder="Filter projects..."
           value={(table.getColumn('title')?.getFilterValue() as string) ?? ''}
           onChange={(event) =>

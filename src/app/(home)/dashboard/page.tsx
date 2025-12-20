@@ -18,6 +18,16 @@ import { Field } from '@/components/ui/field';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { ProjectDialog } from '@/components/projects/dialog';
 import { mutationUpdate } from '@/mutations/projects';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { statuses } from '@/components/table/data/status';
 
 export default function Dashboard() {
   const updateProject = mutationUpdate();
@@ -108,7 +118,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="flex flex-row h-dvh w-full gap-12 px-12 py-3">
+    <div className="flex flex-row h-vh w-full gap-12 px-12 py-3">
       <Card className="h-fit w-2/3">
         <CardHeader>
           <CardTitle>Project Timeline</CardTitle>
@@ -166,6 +176,33 @@ export default function Dashboard() {
               </Field>
             ))}
           </ToggleGroup>
+          <div className="flex flex-row w-full h-full items-end justify-end">
+            <Select
+              onValueChange={(value) =>
+                updateProject.mutate({
+                  uid: data.uid,
+                  changes: [{ property: 'status', value: value }],
+                })
+              }
+            >
+              <SelectTrigger className="w-[180px]">
+                <SelectValue
+                  placeholder={
+                    statuses.find(({ value }) => status === value)!.label
+                  }
+                />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  {statuses.map(({ value, label, icon }, index) => (
+                    <SelectItem key={index} value={value}>
+                      {label}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </div>
         </CardContent>
       </Card>
     </div>
