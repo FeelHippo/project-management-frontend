@@ -119,7 +119,7 @@ export default function Dashboard() {
 
   return (
     <div className="flex flex-row h-vh w-full gap-12 px-12 py-3">
-      <Card className="h-fit w-2/3">
+      <Card key={data.status} className="h-fit w-2/3">
         <CardHeader>
           <CardTitle>Project Timeline</CardTitle>
           <CardDescription>
@@ -178,12 +178,12 @@ export default function Dashboard() {
           </ToggleGroup>
           <div className="flex flex-row w-full h-full items-end justify-end">
             <Select
-              onValueChange={(value) =>
+              onValueChange={(value) => {
                 updateProject.mutate({
                   uid: data.uid,
                   changes: [{ property: 'status', value: value }],
-                })
-              }
+                });
+              }}
             >
               <SelectTrigger className="w-[180px]">
                 <SelectValue
