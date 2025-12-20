@@ -17,7 +17,7 @@ import {
 import { Field } from '@/components/ui/field';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { ProjectDialog } from '@/components/projects/dialog';
-import {mutationDetails, mutationUpdate} from '@/mutations/projects';
+import { mutationDetails, mutationUpdate } from '@/mutations/projects';
 import {
   Select,
   SelectContent,
@@ -29,11 +29,10 @@ import {
 import { statuses } from '@/components/table/data/status';
 import { AppSidebar } from '@/components/sidebar/appSidebar';
 import { SidebarTrigger } from '@/components/ui/sidebar';
-import {Project} from "@/lib/interfaces/project";
+import { Project } from '@/lib/interfaces/project';
 
 export default function Dashboard() {
   const updateProject = mutationUpdate();
-  const detailsProject = mutationDetails();
   const [open, setOpen] = React.useState(false);
 
   // TODO(Filippo): avoid flash navigation to dashboard if user has no session
@@ -52,17 +51,17 @@ export default function Dashboard() {
     queryOptions({
       queryKey: ['projects'],
       queryFn: getProjects,
-        select: (data) => data.length && queryClient.setQueryData(['projectUid'], data[0].uid)
+      select: (data) =>
+        data.length && queryClient.setQueryData(['projectUid'], data[0].uid),
     }),
   );
-
 
   const projectUid = queryClient.getQueryData(['projectUid']);
 
   const { data } = useQuery({
-      queryKey: ['project'],
-      queryFn: () => getProject(projectUid as string),
-      enabled: !!projectUid,
+    queryKey: ['project'],
+    queryFn: () => getProject(projectUid as string),
+    enabled: !!projectUid,
   });
 
   if (!data) return null;

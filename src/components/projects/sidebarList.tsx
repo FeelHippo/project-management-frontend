@@ -1,6 +1,6 @@
 'use client';
 
-import { queryOptions, useQuery, useQueryClient } from '@tanstack/react-query';
+import { queryOptions, useQuery } from '@tanstack/react-query';
 import { getProjects } from '@/hooks/projects';
 import {
   Table,
@@ -22,6 +22,7 @@ import {
   useReactTable,
   VisibilityState,
   SortingState,
+  Row,
 } from '@tanstack/react-table';
 import { columns } from '@/components/table/columns';
 import React from 'react';
@@ -31,7 +32,6 @@ import { Project } from '@/lib/interfaces/project';
 import useKeyboardMode from '@/hooks/useKeyboard';
 
 export default function SidebarList() {
-
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
@@ -39,6 +39,8 @@ export default function SidebarList() {
     [],
   );
   const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [currentlySelected, setCurrentlySelected] = React.useState<string>();
+
   // Recommended query creation
   // https://github.com/TanStack/query/discussions/846#discussioncomment-13454614
   const { data } = useQuery(
@@ -110,6 +112,14 @@ export default function SidebarList() {
                     rowRefs.current[index] = el;
                   }}
                   data-state={row.getIsSelected() && 'selected'}
+                  className={currentlySelected == row.id ? 'bg-blue-100' : ''}
+                  onClick={() => {
+                    const keyboardRow = rowRefs.current.find((el) =>
+                      el?.classList.contains('bg-blue-100'),
+                    );
+                    keyboardRow?.classList.remove('bg-blue-100');
+                    setCurrentlySelected(row.id);
+                  }}
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
