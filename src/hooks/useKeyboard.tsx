@@ -33,6 +33,8 @@ export default function useKeyboardMode(rowModel: RowModel<Project>) {
         const formSearch = document.getElementById('formSearch');
         if (formSearch instanceof HTMLElement) {
           formSearch!.focus();
+            rowRefs.current[prevIdx]?.classList.remove('bg-blue-100');
+            rowRefs.current[0]?.classList.add('bg-blue-100');
         }
       }
 

@@ -57,7 +57,7 @@ export const columns: ColumnDef<Project>[] = [
       return (
         <div className="flex gap-2">
           {label && <Badge variant="outline">{label}</Badge>}
-          <span className="max-w-[500px] truncate font-medium">
+          <span className="max-w-[200px] truncate font-medium">
             {row.original.description}
           </span>
         </div>
