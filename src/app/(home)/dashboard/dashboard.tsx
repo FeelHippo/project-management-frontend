@@ -29,7 +29,6 @@ import {
 import { statuses } from '@/components/table/data/status';
 import { AppSidebar } from '@/components/sidebar/appSidebar';
 import { SidebarTrigger } from '@/components/ui/sidebar';
-import { Project } from '@/lib/interfaces/project';
 
 export default function Dashboard() {
   const updateProject = mutationUpdate();
