@@ -55,9 +55,9 @@ export const columns: ColumnDef<Project>[] = [
       const label = row.original.name;
 
       return (
-        <div className="flex gap-2">
+        <div className="flex max-w-[300px]  gap-2">
           {label && <Badge variant="outline">{label}</Badge>}
-          <span className="max-w-[200px] truncate font-medium">
+          <span className="truncate font-medium">
             {row.original.description}
           </span>
         </div>
@@ -98,7 +98,7 @@ export const columns: ColumnDef<Project>[] = [
       const showDetailsOfProject = mutationDetails();
 
       return (
-        <div className="flex gap-2">
+        <div className="flex">
           <ChevronRight onClick={() => showDetailsOfProject.mutate(uid)} />
         </div>
       );

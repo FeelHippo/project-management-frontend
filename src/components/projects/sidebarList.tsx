@@ -83,7 +83,7 @@ export default function SidebarList() {
   return (
     <div className="flex flex-col gap-4 h-full">
       <DataTableToolbar table={table} />
-      <div className="overflow-scroll rounded-md border size-full">
+      <div className="h-full overflow-scroll rounded-md border">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (

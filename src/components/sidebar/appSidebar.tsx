@@ -32,11 +32,11 @@ export function AppSidebar() {
     window.location.href = '/login'; // or to wherever your logic page is
   }
   return (
-    <Sidebar>
+    <Sidebar className="flex flex-col max-h-full">
       <SidebarContent>
-        <SidebarGroup className="h-[100%]">
+        <SidebarGroup className="flex flex-col justify-center h-full py-4">
           <SidebarGroupLabel>Project Management</SidebarGroupLabel>
-          <SidebarGroupContent className="h-[100%]">
+          <SidebarGroupContent className="flex flex-col h-full">
             <SideBarList />
           </SidebarGroupContent>
         </SidebarGroup>
