@@ -59,3 +59,11 @@ This application is served through AWS Amplify, and is publicly accessible [here
           - same when it comes to errors, everything is handled in the dedicated mutations
 
 ## What to improve
+
+The code is clean and adheres to NextJs and TanStack Query's best practices. The project is set up in a way, that any of these could be implemented very easily:
+
+- Split-pane resizing: swap UI component with [this](https://github.com/lumpinif/shadcn-resizable-sidebar)
+- “Recent projects” section in sidebar: projects are ordered `recent to first created`, but to display a dedicated section would require some UI effort, since the sidebar is already cramped with information and input components.
+- Command palette (Cmd+K) to jump projects / actions: Nextjs and ShadCn do not support keyboard commands by default. To make it work, I leveraged on good old DOM manipulation, by selecting and modifying HTMLElements directly. [This](https://github.com/FeelHippo/project-management-frontend/blob/main/src/hooks/useKeyboard.tsx) is the result, and one of the most time consuming tasks in this project
+- Offline-ish behavior (queue mutation / retry): this would be a very interesting challenge. The mutations persist some data already, in case of failure or outage, but the details section doesn't, and would fail upon navigating to a project.
+- “Last saved at …” timestamp + subtle save indicator: this is what the timeline tries to achieve, though there is a lot of room for improvement
