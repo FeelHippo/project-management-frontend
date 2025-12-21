@@ -4,40 +4,58 @@ An internal tool for managing projects.
 
 ## Getting Started
 
-First, run the development server:
+To run this application locally, first obtain copy of the `.env` file containing the secret environment variables. 
+
+This project requires NodeJs version 21 and higher. I recommend installing `NVM` for that.
+
+Second, run the development server:
 
 ```bash
+nvm use 21
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Deployment
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+This application is served through AWS Amplify, and is publicly accessible [here](https://main.d3bd2fu6kg05nw.amplifyapp.com/)
 
-## Learn More
+## Dependencies:
 
-To learn more about Next.js, take a look at the following resources:
+- Authentication and Session management:
+  - SuperTokens frontend [SDK](https://supertokens.com/docs/quickstart/frontend-setup)
+  - NextJs [Page Directory](https://supertokens.com/docs/quickstart/integrations/nextjs/pages-directory/about)
+  - SuperTokens [Dashboard](https://supertokens.com/dashboard-saas/core-management/managed/cadda850f1de1b537ac69e91404b02a6df39f1aaad30c519862d09664cb1715b/public/development) (Please request credentials to me if necessary)
+- State Management:
+  - [TanStack Query](https://tanstack.com/query/latest)
+- Design System:
+  - [ShadCn](https://ui.shadcn.com/)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Tradeoffs and UX decisions
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- Layout:
+    - Left Panel: Sidebar list of projects:
+        - scrollable
+        - Shows: name, description, status badge
+        - ToolBar:
+          - filter by text, case insensitive
+          - filter by status
+          - option to delete selected projects
+        - Projects:
+          - Click to select and display details
+          - `up/down` to move selection
+          - `Enter` opens/focuses detail
+          - `/` focuses search
+          - Empty + loading (taken care of by hydration) + error states (handled by mutations)
+    - Detail view of selected project with inline editing:
+      - Timeline Card:
+        - shows meaningful information regarding the project status over time
+          - the idea would be to expand this feature, though it would require a different data structure in the BE
+      - Update Project Card:
+        - Shows: project name, status, description, tags
+        - Updates: name, description, tags, status (timestamps updated by Postgres in the BE)
+          - calls to BE minimized by leveraging on TanStack Query ability to mutate date in place
+          - same when it comes to errors, everything is handled in the dedicated mutations
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-
-## Resources:
-
-- [Figma design](https://www.figma.com/design/19sNNXpzC3pNjXlRIVF15O/Signup-Login-Web-UI--Community-?node-id=1-4&t=7xraIGroQTjTDcQ0-0)
-- [Vercel Platforms App](https://github.com/vercel/platforms)
+## What to improve

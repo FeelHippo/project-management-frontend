@@ -64,7 +64,7 @@ export default function Dashboard() {
     enabled: !!projectUid,
   });
 
-  if (!data) return null;
+  if (!data) return <AppSidebar />;
 
   const { createdAt, updatedAt, archivedAt, description, status, name, tags } =
     data!;
